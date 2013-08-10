@@ -153,7 +153,7 @@ M-x tss-restart-current-buffer とすることで、本拡張を再度有効に�
 ### 入力補完候補数の制限
 
 バッファのポイント箇所において入力できる候補を、typescript-toolsはjson形式で提供するため、  
-本拡張で利用するためにデータ変換をしていますが、
+本拡張で利用するためにデータ変換をしていますが、  
 候補数が多いと変換処理でEmacsがフリーズしてしまう可能性があるため、候補数を制限する対処をしています。  
 
 auto-complete.elでは、候補表示状態でC-sすることで候補を絞り込めますが、  
@@ -170,7 +170,7 @@ auto-complete.elでは、候補表示状態でC-sすることで候補を絞り�
 フリーズが多発するような場合には、以下を実施することで応急対処が可能です。
 
 1. 修正版のtss.tsを取得する [修正版tss.ts](https://raw.github.com/aki2o/typescript-tools/maxresponses/tss.ts)
-2. typescript-tools本家のREADMEを参照し、ソースからコンパイルする。
+2. typescript-tools本家のREADMEを参照し、本家のソースをtss.tsだけ修正版に置き換えてコンパイルする。
 3. コンパイル後、インストールする。
 
 ----
