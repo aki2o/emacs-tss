@@ -50,7 +50,7 @@
 ;; 
 ;; ;; Key Binding
 ;; (setq tss-popup-help-key "C-:")
-;; (setq tss-jump-to-definition "C->")
+;; (setq tss-jump-to-definition-key "C->")
 
 ;;; Customization:
 ;; 
@@ -224,7 +224,8 @@
                   (not (file-exists-p deffile))
                   (not startrow)
                   (not startcol))
-              (message "[TSS] Not found definition location at point")
+              (progn (message "[TSS] Not found definition location at point")
+                     (tss--trace "Not found location file[%s] row[%s] col[%s]" deffile startrow startcol))
             (ring-insert find-tag-marker-ring (point-marker))
             (find-file deffile)
             (goto-char (point-min))
@@ -300,27 +301,30 @@
   (interactive)
   (yaxception:$
     (yaxception:try
-      (local-set-key (kbd ".") 'tss--insert-with-ac-trigger-command)
-      (when (and (stringp tss-popup-help-key)
-                 (not (string= tss-popup-help-key "")))
-        (local-set-key (read-kbd-macro tss-popup-help-key) 'tss-popup-help))
-      (when (and (stringp tss-jump-to-definition-key)
-                 (not (string= tss-jump-to-definition-key "")))
-        (local-set-key (read-kbd-macro tss-jump-to-definition-key) 'tss-jump-to-definition))
-      ;; For auto-complete
-      (add-to-list 'ac-sources 'ac-source-tss-member)
-      (add-to-list 'ac-sources 'ac-source-tss-type)
-      (add-to-list 'ac-sources 'ac-source-tss-new)
-      (add-to-list 'ac-sources 'ac-source-tss-anything)
-      (add-to-list 'ac-sources 'ac-source-tss-keyword)
-      (add-to-list 'ac-modes 'typescript-mode)
-      (auto-complete-mode t)
-      ;; For flymake
-      (setq flymake-err-line-patterns '(("\\`\\(.+?\\.ts\\) (\\([0-9]+\\),\\([0-9]+\\)): \\(.+\\)" 1 2 3 4)))
-      (flymake-mode t)
-      ;; Start TypeScript Services
-      (tss--get-process t)
-      (tss--info "finished setup for %s" (current-buffer)))
+      (when (tss--active-p)
+        (local-set-key (kbd "SPC") 'tss--insert-with-ac-trigger-command)
+        (local-set-key (kbd ".") 'tss--insert-with-ac-trigger-command)
+        (local-set-key (kbd ":") 'tss--insert-with-ac-trigger-command)
+        (when (and (stringp tss-popup-help-key)
+                   (not (string= tss-popup-help-key "")))
+          (local-set-key (read-kbd-macro tss-popup-help-key) 'tss-popup-help))
+        (when (and (stringp tss-jump-to-definition-key)
+                   (not (string= tss-jump-to-definition-key "")))
+          (local-set-key (read-kbd-macro tss-jump-to-definition-key) 'tss-jump-to-definition))
+        ;; For auto-complete
+        (add-to-list 'ac-sources 'ac-source-tss-member)
+        (add-to-list 'ac-sources 'ac-source-tss-type)
+        (add-to-list 'ac-sources 'ac-source-tss-new)
+        (add-to-list 'ac-sources 'ac-source-tss-anything)
+        (add-to-list 'ac-sources 'ac-source-tss-keyword)
+        (add-to-list 'ac-modes 'typescript-mode)
+        (auto-complete-mode t)
+        ;; For flymake
+        (setq flymake-err-line-patterns '(("\\`\\(.+?\\.ts\\) (\\([0-9]+\\),\\([0-9]+\\)): \\(.+\\)" 1 2 3 4)))
+        (flymake-mode t)
+        ;; Start TypeScript Services
+        (tss--get-process t)
+        (tss--info "finished setup for %s" (current-buffer))))
     (yaxception:catch 'error e
       (message "[TSS] Failed setup : %s" (yaxception:get-text e))
       (tss--error "failed setup : %s\n%s"
@@ -379,11 +383,11 @@
 
 (defun tss--active-p ()
   (and tss--current-active-p
-       (memq major-mode '(typescript-mode))))
+       (memq major-mode '(typescript-mode))
+       t))
 
 (defun* tss--get-server-response (cmdstr &key waitsec response-start-char response-end-char)
-  (if (not (tss--active-p))
-      ""
+  (when (tss--active-p)
     (tss--debug "Start get server response. cmdstr[%s] waitsec[%s]" cmdstr waitsec)
     (let ((proc (tss--get-process))
           (waiti 0)
@@ -392,8 +396,7 @@
       (setq tss--incomplete-server-response "")
       (setq tss--json-response-start-char (or response-start-char "{"))
       (setq tss--json-response-end-char (or response-end-char "}"))
-      (if (not (tss--send-string proc cmdstr))
-          ""
+      (when (tss--send-string proc cmdstr)
         (tss--trace "Start wait response from server.")
         (while (and (< waiti maxwaiti)
                     (not tss--server-response))
@@ -417,7 +420,7 @@
                                     (count-lines (point-min)
                                                  (or endpt (point-max)))
                                     (expand-file-name (buffer-file-name))))))
-        (tss--debug "Start sync server.")
+        (tss--debug "Start sync server : %s" cmdstr)
         (when (tss--send-string proc cmdstr)
           (setq tss--server-response nil)
           (setq tss--incomplete-server-response "")
@@ -558,6 +561,8 @@
       (yaxception:catch 'error e
         (tss--error "failed delete process : %s" (yaxception:get-text e))))))
 
+(add-hook 'kill-buffer-hook 'tss--delete-process t t)
+
 (defun tss--start-process (&optional initializep)
   (when (not (executable-find "tss"))
     (yaxception:throw 'tss-command-not-found))
@@ -575,8 +580,10 @@
     (when proc
       (set-process-filter proc 'tss--receive-server-response)
       (process-query-on-exit-flag proc)
-      (add-hook 'kill-buffer-hook 'tss--delete-process t t)
       (setq tss--server-response nil)
+      (setq tss--incomplete-server-response "")
+      (setq tss--json-response-start-char "")
+      (setq tss--json-response-end-char "")
       (while (and (< waiti 50)
                   (not tss--server-response))
         (accept-process-output proc 0.2 nil t)
