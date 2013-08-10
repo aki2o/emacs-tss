@@ -282,7 +282,8 @@
       (when (and (tss--active-p)
                  (tss--exist-process))
         (tss--debug "Start reload current project of %s" (buffer-name))
-        (tss--send-string (tss--get-process) "reload")))
+        (tss--send-string (tss--get-process) "reload")
+        (message "[TSS] Finished request reload.")))
     (yaxception:catch 'error e
       (message "[TSS] %s" (yaxception:get-text e))
       (tss--error "failed reload current project : %s\n%s"
