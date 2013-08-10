@@ -5,7 +5,7 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.1.0
+;; Version: 0.1.1
 ;; Package-Requires: ((auto-complete "1.4.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -117,6 +117,11 @@
 (defcustom tss-jump-to-definition-key nil
   "Keystroke for jump to method definition at point."
   :type 'string
+  :group 'tss)
+
+(defcustom tss-max-json-response-count 200
+  "Number of the max size of handling json response."
+  :type 'integer
   :group 'tss)
 
 
@@ -348,7 +353,7 @@
     (document . tss--get-ac-document)
     (requires . 0)
     (cache)
-    (limit . 200)))
+    (limit . tss-max-json-response-count)))
 
 (defvar ac-source-tss-new
   '((candidates . tss--get-ac-non-member-candidates)
@@ -357,7 +362,7 @@
     (document . tss--get-ac-document)
     (requires . 0)
     (cache)
-    (limit . 200)))
+    (limit . tss-max-json-response-count)))
 
 (defvar ac-source-tss-anything
   '((candidates . tss--get-ac-non-member-candidates)
@@ -366,7 +371,7 @@
     (document . tss--get-ac-document)
     (requires . 1)
     (cache)
-    (limit . 200)))
+    (limit . tss-max-json-response-count)))
 
 (defvar ac-source-tss-keyword
   '((candidates . tss--get-ac-keyword-candidates)
@@ -476,6 +481,8 @@
                          (ret (tss--get-server-response cmdstr :waitsec 3))
                          (entries (when (listp ret)
                                     (cdr (assoc 'entries ret)))))
+                    (when (= (length entries) tss-max-json-response-count)
+                      (setq tss--last-ac-start-point 1))
                     (mapcar (lambda (e)
                               (let ((name (cdr (assoc 'name e)))
                                     (kind (cdr (assoc 'kind e)))
@@ -593,6 +600,7 @@
       (tss--info "Finished start tss process.")
       (cond (initializep (message "[TSS] Loaded '%s'." (buffer-name)))
             (t           (message "[TSS] Reloaded '%s'." (buffer-name))))
+      (tss--send-string proc (format "maxresponses %d" tss-max-json-response-count))
       (setq tss--proc proc))))
 
 (defun tss--receive-server-response (proc res)

@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'typescript "typescript-mode")
+(require 'typescript)
 (require 'el-expectations)
 (require 'tenv)
 
