@@ -1,3 +1,5 @@
+[Japanese](https://github.com/aki2o/emacs-tss/blob/master/README-ja.md)
+
 What's this?
 ============
 
