@@ -101,8 +101,8 @@ So, bundle typescript.el as modified version of the official TypeScript.el.
     > 
     >   (run-mode-hooks 'typescript-mode-hook))
 
-**Note:** It maybe happen that update of the official version is not merged into typescript.el.
-**Note:** The last date of checking merge is 2013/08/10.
+**Note:** It maybe happen that update of the official version is not merged into typescript.el.  
+**Note:** The last date of checking merge is 2013/08/10.  
 
 
 Configuration
