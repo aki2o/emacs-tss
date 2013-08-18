@@ -79,7 +79,7 @@ You can available el-get to install this extension.
 
 [The official site](http://www.typescriptlang.org/) provides TypeScript.el for Emacs.  
 But the official Typescript.el has some trouble ( wrong syntax, have no hook ).  
-So, bundle typescript.el as modified version of the official TypeScript.el.  
+So, I have bundled typescript.el as modified version of the official TypeScript.el.  
 
 #### Modification from the official version
 
