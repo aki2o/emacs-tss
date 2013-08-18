@@ -119,11 +119,6 @@
   :type 'string
   :group 'tss)
 
-(defcustom tss-max-json-response-count 200
-  "Number of the max size of handling json response."
-  :type 'integer
-  :group 'tss)
-
 
 (log4e:deflogger "tss" "%t [%l] %m" "%H:%M:%S" '((fatal . "fatal")
                                                  (error . "error")
@@ -169,13 +164,13 @@
     (widen)
     (format "%d %d"
             (line-number-at-pos)
- 			(- (point) (line-beginning-position)))))
+ 			(+ (- (point) (line-beginning-position)) 1))))
 
-(defsubst tss--send-string (proc cmdstr)
+(defsubst tss--send-string (proc sendstr)
   (yaxception:$
     (yaxception:try
       (when proc
-        (process-send-string proc (concat cmdstr "\n"))
+        (process-send-string proc (concat sendstr "\n"))
         t))
     (yaxception:catch 'error e
       (tss--error "failed send string : %s" (yaxception:get-text e))
@@ -264,8 +259,8 @@
                                           (line (cdr (assoc 'line start)))
                                           (col (cdr (assoc 'col start)))
                                           (text (cdr (assoc 'text e))))
-                                     (tss--trace "Found error file[%s] line[%d] col[%d] ... %s" file line col text)
-                                     (format "%s (%d,%d): %s" file line col text)))
+                                     (tss--trace "Found error file[%s] line[%s] col[%s] ... %s" file line col text)
+                                     (format "%s (%d,%d): %s" file (or line 0) (or col 0) text)))
                                  ret))))
           (when errors
             (setq flymake-new-err-info (flymake-parse-err-lines flymake-new-err-info errors)))
@@ -352,8 +347,7 @@
     (symbol . "t")
     (document . tss--get-ac-document)
     (requires . 0)
-    (cache)
-    (limit . tss-max-json-response-count)))
+    (cache)))
 
 (defvar ac-source-tss-new
   '((candidates . tss--get-ac-non-member-candidates)
@@ -361,8 +355,7 @@
     (symbol . "c")
     (document . tss--get-ac-document)
     (requires . 0)
-    (cache)
-    (limit . tss-max-json-response-count)))
+    (cache)))
 
 (defvar ac-source-tss-anything
   '((candidates . tss--get-ac-non-member-candidates)
@@ -370,8 +363,7 @@
     (symbol . "a")
     (document . tss--get-ac-document)
     (requires . 1)
-    (cache)
-    (limit . tss-max-json-response-count)))
+    (cache)))
 
 (defvar ac-source-tss-keyword
   '((candidates . tss--get-ac-keyword-candidates)
@@ -421,7 +413,7 @@
       (widen)
       (let ((proc (tss--get-process))
             (waiti 0)
-            (maxwaiti (* (or waitsec 2) 5))
+            (maxwaiti (* (or waitsec 3) 5))
             (cmdstr (concat (format "update %d %s"
                                     (count-lines (point-min)
                                                  (or endpt (point-max)))
@@ -432,13 +424,11 @@
           (setq tss--incomplete-server-response "")
           (setq tss--json-response-start-char "")
           (setq tss--json-response-end-char "")
-          (tss--send-string proc (concat (buffer-substring (point-min)
-                                                           (or endpt (point-max)))))
+          (tss--send-string proc (buffer-substring (point-min) (or endpt (point-max))))
           (tss--trace "Start wait sync server.")
           (while (and (< waiti maxwaiti)
                       (not tss--server-response))
             (accept-process-output proc 0.2 nil t)
-            (sleep-for 0.2)
             (incf waiti))
           (cond ((not (< waiti maxwaiti))
                  (tss--warn "Timeout sync server.")
@@ -477,12 +467,10 @@
                          (memberarg (cond (memberp "true")
                                           (t       "false")))
                          (fpath (expand-file-name (buffer-file-name)))
-                         (cmdstr (format "completions %s %s %s" memberarg posarg fpath))
+                         (cmdstr (format "completions-brief %s %s %s" memberarg posarg fpath))
                          (ret (tss--get-server-response cmdstr :waitsec 3))
                          (entries (when (listp ret)
                                     (cdr (assoc 'entries ret)))))
-                    (when (= (length entries) tss-max-json-response-count)
-                      (setq tss--last-ac-start-point 1))
                     (mapcar (lambda (e)
                               (let ((name (cdr (assoc 'name e)))
                                     (kind (cdr (assoc 'kind e)))
@@ -579,6 +567,7 @@
   (let* ((fpath (expand-file-name (buffer-file-name)))
          (procnm (format "typescript-service-%s" (buffer-name)))
          (cmdstr (format "tss %s" (shell-quote-argument fpath)))
+         (process-connection-type nil)
          (proc (when (file-exists-p fpath)
                  (tss--trace "Do %s" cmdstr)
                  (cond (initializep (message "[TSS] Load '%s' ..." (buffer-name)))
@@ -600,7 +589,6 @@
       (tss--info "Finished start tss process.")
       (cond (initializep (message "[TSS] Loaded '%s'." (buffer-name)))
             (t           (message "[TSS] Reloaded '%s'." (buffer-name))))
-      (tss--send-string proc (format "maxresponses %d" tss-max-json-response-count))
       (setq tss--proc proc))))
 
 (defun tss--receive-server-response (proc res)
@@ -629,8 +617,7 @@
                   return (progn (tss--debug "Got other response : %s" line)
                                 (setq tss--server-response t))
                   if (string-match "\\`\"TSS +\\(.+\\)\"\\'" line)
-                  do (progn (tss--debug "Got error response : %s" line)
-                            (tss--handle-err-response (match-string-no-properties 1 line))))))))
+                  do (tss--handle-err-response (match-string-no-properties 1 line)))))))
     (yaxception:catch 'json-error e
       (tss--warn "failed parse response : %s" (yaxception:get-text e))
       (setq tss--server-response t))
@@ -642,7 +629,10 @@
 (defun tss--handle-err-response (res)
   (cond ((string= res "closing")
          nil)
+        ((string-match "\\`command syntax error:" res)
+         nil)
         (t
+         (tss--debug "Got error response : %s" res)
          (message "[TSS] %s" res))))
 
 

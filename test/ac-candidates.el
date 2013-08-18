@@ -25,7 +25,7 @@
         (goto-char (point-max))
         (when (search-backward "cmdstr" nil t)
           (string= (buffer-substring-no-properties (point) (point-at-eol))
-                   (concat "cmdstr[completions true 1 5 " tfile "] waitsec[3]"))))))
+                   (concat "cmdstr[completions-brief true 1 6 " tfile "] waitsec[3]"))))))
   (desc "ac-candidates call for non-member")
   (expect t
     (stub tss--sync-server => t)
@@ -40,7 +40,7 @@
         (goto-char (point-max))
         (when (search-backward "cmdstr" nil t)
           (string= (buffer-substring-no-properties (point) (point-at-eol))
-                   (concat "cmdstr[completions false 2 6 " tfile "] waitsec[3]"))))))
+                   (concat "cmdstr[completions-brief false 2 7 " tfile "] waitsec[3]"))))))
   (desc "ac-candidates get")
   (expect "version is PROPERTY.\n\nType: Number\n\nhogege\n"
     (stub tss--sync-server => t)

@@ -26,7 +26,7 @@
         (goto-char (point-max))
         (when (search-backward "cmdstr" nil t)
           (string= (buffer-substring-no-properties (point) (point-at-eol))
-                   (concat "cmdstr[type 2 6 " tfile "] waitsec[nil]"))))))
+                   (concat "cmdstr[type 2 7 " tfile "] waitsec[nil]"))))))
   (desc "popup-help get")
   (expect (mock (popup-tip "Harness.ScriptInfo.version is PROPERTY.\n\nType: Number\n\nhogege\n"))
     (stub tss--sync-server => t)

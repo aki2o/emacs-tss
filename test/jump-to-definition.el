@@ -25,7 +25,7 @@
         (goto-char (point-max))
         (when (search-backward "cmdstr" nil t)
           (string= (buffer-substring-no-properties (point) (point-at-eol))
-                   (concat "cmdstr[definition 2 6 " tfile "] waitsec[nil]"))))))
+                   (concat "cmdstr[definition 2 7 " tfile "] waitsec[nil]"))))))
   (desc "jump-to-definition jump to exist file")
   (expect t
     (stub tss--sync-server => t)
