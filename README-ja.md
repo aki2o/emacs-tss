@@ -150,31 +150,6 @@ Typescript編集のための拡張が、[公式サイト](http://www.typescriptl
 バッファを変更すれば本拡張を再度有効にしても正常に動作するかも知れません。  
 M-x tss-restart-current-buffer とすることで、本拡張を再度有効にすることができます。
 
-### 入力補完候補数の制限
-
-バッファのポイント箇所において入力できる候補を、typescript-toolsはjson形式で提供するため、  
-本拡張で利用するためにデータ変換をしていますが、  
-候補数が多いと変換処理でEmacsがフリーズしてしまう可能性があるため、候補数を制限する対処をしています。  
-
-auto-complete.elでは、候補表示状態でC-sすることで候補を絞り込めますが、  
-候補数が制限されている場合には出現すべき候補が出てこない場合もあります。  
-その場合は、続けて文字を入力することで候補が更新され表示されると思います。  
-
-※ typescript-toolsが解析に失敗して表示されない場合もあります。  
-
-----
-
-#### 2013/08/10 
-
-現在、フリーズを回避する対処を行った修正版をtypescript-tools本家に取り込んでもらうように依頼しています。  
-フリーズが多発するような場合には、以下を実施することで応急対処が可能です。
-
-1. 修正版のtss.tsを取得する [修正版tss.ts](https://raw.github.com/aki2o/typescript-tools/maxresponses/tss.ts)
-2. typescript-tools本家のREADMEを参照し、本家のソースをtss.tsだけ修正版に置き換えてコンパイルする。
-3. コンパイル後、インストールする。
-
-----
-
 ### 参照ファイルの更新内容の反映
 
 Typescriptでは参照などにより、外部ファイルの機能を利用することが可能ですが、  
@@ -187,6 +162,7 @@ Typescriptでは参照などにより、外部ファイルの機能を利用す�
 ========
 
 * Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
+* typescript-tools ... master branch
 * auto-complete.el ... 1.4.0
 * log4e.el ... 0.2.0
 * yaxception.el ... 0.1

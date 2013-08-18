@@ -149,32 +149,6 @@ The above case is caused by the contents of the buffer.
 So, typescript-tools maybe back to normal by activation after editing of the buffer.  
 If you want to activate this extension again, do M-x tss-restart-current-buffer.
 
-### Limiting the number of completion candidate
-
-For using auto-complete.el, this extension parse JSON data got from typesctipt-tools.  
-And, freeze may be caused by parsing large JSON data.  
-So, this extension limit the size of JSON data got from typescript-tools.  
-
-On completion, user can narrow the completion candidate by C-s.  
-In the situation, it maybe happen that the candidate should be shown but not shown.  
-If it happend, the candidate will be shown by typing subsequent character probably.  
-
-----
-
-#### 2013/08/10
-
-For limiting the size of JSON data, need modifying typescript-tools.  
-I made modified version of typescript-tools. It's https://github.com/aki2o/typescript-tools  
-Now, I'm requesting the original typescript-tools merge my modified version.  
-
-If freeze happend and you want to avoid it, do the following.
-
-1. Get [modified version tss.ts](https://raw.github.com/aki2o/typescript-tools/maxresponses/tss.ts).
-2. Do compile original typescript-tools seeing README and replacing tss.ts with the modified.
-3. Do install.
-
-----
-
 ### Reflection of modified other file
 
 In Typescript, can import definition of other file using `///<reference path='...'>` and so on.  
@@ -186,6 +160,7 @@ Tested On
 =========
 
 * Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
+* typescript-tools ... master branch
 * auto-complete.el ... 1.4.0
 * log4e.el ... 0.1
 * yaxception.el ... 0.1
