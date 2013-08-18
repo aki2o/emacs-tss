@@ -5,7 +5,7 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.1.1
+;; Version: 0.2.0
 ;; Package-Requires: ((auto-complete "1.4.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 
 ;;; Dependency:
 ;; 
-;; - typescript-mode.el ( see <http://www.typescriptlang.org/> )
+;; - typescript.el ( see <http://www.typescriptlang.org/> )
 ;; - typescript-tools ( see <https://github.com/clausreinke/typescript-tools> )
 ;; - auto-complete.el ( see <https://github.com/auto-complete/auto-complete> )
 ;; - yaxception.el ( see <https://github.com/aki2o/yaxception> )
@@ -84,7 +84,7 @@
 ;;; Tested On:
 ;; 
 ;; - Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
-;; - typescript-tools ... Version 0.8.3
+;; - typescript-tools ... Version For Typescript v0.9
 ;; - auto-complete.el ... Version 1.4.0
 ;; - yaxception.el ... Version 0.1
 ;; - log4e.el ... Version 0.2.0
