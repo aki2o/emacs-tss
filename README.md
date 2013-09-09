@@ -108,23 +108,25 @@ So, I have bundled typescript.el as modified version of the official TypeScript.
 Configuration
 =============
 
-### If use bundled typescript.el
-
 ```lisp
+;; If use bundled typescript.el,
 (require 'typescript)
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+
 (require 'tss)
-(add-hook 'typescript-mode-hook 'tss-setup t)
+
+;; Key binding
 (setq tss-popup-help-key "C-:")
 (setq tss-jump-to-definition-key "C->")
-```
 
-### If use official TypeScript.el
+;; If there is the mode, which you want to enable TSS,
+(add-to-list 'tss-enable-modes 'hoge-mode)
 
-```lisp
-(require 'tss)
-(setq tss-popup-help-key "C-:")
-(setq tss-jump-to-definition-key "C->")
+;; If there is the key, which you want to start completion of auto-complete.el,
+(add-to-list 'tss-ac-trigger-command-keys "=")
+
+;; Do setting recommemded configuration
+(tss-config-default)
 ```
 
 
@@ -133,8 +135,14 @@ Attention
 
 ### Activation
 
-If use bundled typescript.el, do not need to do anything.  
-If use official TypeScript.el, need M-x tss-setup for activation in typescript-mode.  
+If you meet the following condition, do not need to do anything.
+
+* use bundled typescript.el
+* use `tss-config-default` setting
+
+Otherwise, need M-x `tss-setup-current-buffer` for activation in typescript-mode.  
+
+**Note:** Not activate on the buffer of the mode not included in `tss-enable-modes`.  
 
 ### Deactivation by trouble at typescript-tools
 
@@ -147,13 +155,13 @@ this extention is deactivated automatically and the following popup notification
 
 The above case is caused by the contents of the buffer.  
 So, typescript-tools maybe back to normal by activation after editing of the buffer.  
-If you want to activate this extension again, do M-x tss-restart-current-buffer.
+If you want to activate this extension again, do M-x `tss-restart-current-buffer`.
 
 ### Reflection of modified other file
 
 In Typescript, can import definition of other file using `///<reference path='...'>` and so on.  
 But, this extension can not notice update of them automatically.  
-If you want to reflect update of them into current buffer, do M-x tss-reload-current-project.
+If you want to reflect update of them into current buffer, do M-x `tss-reload-current-project`.
 
 
 Tested On

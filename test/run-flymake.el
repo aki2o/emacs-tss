@@ -29,7 +29,7 @@
       (with-current-buffer (find-file-noselect tfile)
         (erase-buffer)
         (insert "var s1;\n")
-        (tss-setup)
+        (tss-setup-current-buffer)
         (save-buffer))
       (with-current-buffer (get-buffer " *log4e-tss*")
         (goto-char (point-max))

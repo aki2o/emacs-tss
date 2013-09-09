@@ -105,27 +105,27 @@ Typescript編集のための拡張が、[公式サイト](http://www.typescriptl
 設定
 ====
 
-### 同梱されたtypescript.elを使う場合
-
 ```lisp
+;; 同梱されたtypescript.elを使う場合
 (require 'typescript)
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-(require 'tss)
-(add-hook 'typescript-mode-hook 'tss-setup t)
-;; ポイントしている要素についてのヘルプをポップアップ表示
-(setq tss-popup-help-key "C-:")
-;; ポイントしている要素の定義元へジャンプ
-(setq tss-jump-to-definition-key "C->")
-```
 
-### オリジナルのTypeScript.elを使う場合
-
-```lisp
 (require 'tss)
-;; ポイントしている要素についてのヘルプをポップアップ表示
+
+;; ポイントしている要素についてのヘルプをポップアップ表示するキー
 (setq tss-popup-help-key "C-:")
-;; ポイントしている要素の定義元へジャンプ
+
+;; ポイントしている要素の定義元へジャンプするキー
 (setq tss-jump-to-definition-key "C->")
+
+;; 本拡張を有効にしたいモードを追加/変更する場合
+(add-to-list 'tss-enable-modes 'hoge-mode)
+
+;; 入力と同時にauto-complete.elの補完を開始したいキーを追加/変更する場合
+(add-to-list 'tss-ac-trigger-command-keys "=")
+
+;; 推奨設定を行う
+(tss-config-default)
 ```
 
 
@@ -134,8 +134,14 @@ Typescript編集のための拡張が、[公式サイト](http://www.typescriptl
 
 ### 有効化
 
-同梱されたtypescript.elを使う場合は、自動で有効になるため気にする必要はありません。  
-オリジナルのTypeScript.elを使う場合は、自動で有効にならないので、M-x tss-setup として下さい。
+以下の条件を満たしている場合は、自動で有効になるため気にする必要はありません。
+
+* 同梱されたtypescript.elを使っている
+* `tss-config-default`を実施している
+
+それ以外の場合は、自動で有効にならないので、M-x`tss-setup-current-buffer`として下さい。
+
+※ `tss-enable-modes`のモード以外のバッファでは有効にはなりません。  
 
 ### 解析不能による無効化
 
@@ -148,14 +154,14 @@ Typescript編集のための拡張が、[公式サイト](http://www.typescriptl
 
 解析不能な状態になる原因はバッファの内容にあるため、  
 バッファを変更すれば本拡張を再度有効にしても正常に動作するかも知れません。  
-M-x tss-restart-current-buffer とすることで、本拡張を再度有効にすることができます。
+M-x`tss-restart-current-buffer`とすることで、本拡張を再度有効にすることができます。
 
 ### 参照ファイルの更新内容の反映
 
 Typescriptでは参照などにより、外部ファイルの機能を利用することが可能ですが、  
 外部ファイルが更新されても、現在編集中のバッファには自動では反映されません。  
 編集中のバッファから参照しているファイル内の定義が変更された場合、  
-それを反映させるには、 M-x tss-reload-current-project として下さい。
+それを反映させるには、 M-x`tss-reload-current-project`として下さい。
 
 
 動作確認

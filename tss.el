@@ -5,7 +5,7 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.2.0
+;; Version: 0.3.0
 ;; Package-Requires: ((auto-complete "1.4.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,15 @@
 ;; ;; Key Binding
 ;; (setq tss-popup-help-key "C-:")
 ;; (setq tss-jump-to-definition-key "C->")
+;; 
+;; ;; If there is the mode, which you want to enable TSS,
+;; (add-to-list 'tss-enable-modes 'hoge-mode)
+;; 
+;; ;; If there is the key, which you want to start completion of auto-complete.el,
+;; (add-to-list 'tss-ac-trigger-command-keys "=")
+;; 
+;; ;; Do setting recommemded configuration
+;; (tss-config-default)
 
 ;;; Customization:
 ;; 
@@ -59,6 +68,10 @@
 ;; Keystroke for popup help about anything at point.
 ;; `tss-jump-to-definition-key'
 ;; Keystroke for jump to method definition at point.
+;; `tss-enable-modes'
+;; Major modes TSS is enabled on.
+;; `tss-ac-trigger-command-keys'
+;; Keystrokes for doing `ac-start' with self insert.
 ;; 
 ;;  *** END auto-documentation
 
@@ -75,8 +88,8 @@
 ;; Reload project data for current buffer.
 ;; `tss-restart-current-buffer'
 ;; Restart TSS for current buffer.
-;; `tss-setup'
-;; Do setup TSS for current buffer.
+;; `tss-setup-current-buffer'
+;; Do setup for using TSS in current buffer.
 ;; 
 ;;  *** END auto-documentation
 ;; [Note] Functions and variables other than listed above, Those specifications may be changed without notice.
@@ -117,6 +130,16 @@
 (defcustom tss-jump-to-definition-key nil
   "Keystroke for jump to method definition at point."
   :type 'string
+  :group 'tss)
+
+(defcustom tss-enable-modes '(typescript-mode)
+  "Major modes TSS is enabled on."
+  :type '(repeat symbol)
+  :group 'tss)
+
+(defcustom tss-ac-trigger-command-keys '("SPC" "." ":")
+  "Keystrokes for doing `ac-start' with self insert."
+  :type '(repeat string)
   :group 'tss)
 
 
@@ -185,6 +208,7 @@
       nil)))
 
 
+;;;###autoload
 (defun tss-popup-help ()
   "Popup help about anything at point."
   (interactive)
@@ -206,6 +230,7 @@
                   (yaxception:get-text e)
                   (yaxception:get-stack-trace-string e)))))
 
+;;;###autoload
 (defun tss-jump-to-definition ()
   "Jump to method definition at point."
   (interactive)
@@ -237,6 +262,7 @@
                   (yaxception:get-text e)
                   (yaxception:get-stack-trace-string e)))))
 
+;;;###autoload
 (defun tss-run-flymake ()
   "Run check by flymake for current buffer."
   (interactive)
@@ -272,8 +298,7 @@
                   (yaxception:get-text e)
                   (yaxception:get-stack-trace-string e)))))
 
-(add-hook 'after-save-hook 'tss-run-flymake t)
-
+;;;###autoload
 (defun tss-reload-current-project ()
   "Reload project data for current buffer."
   (interactive)
@@ -290,6 +315,7 @@
                   (yaxception:get-text e)
                   (yaxception:get-stack-trace-string e)))))
 
+;;;###autoload
 (defun tss-restart-current-buffer ()
   "Restart TSS for current buffer."
   (interactive)
@@ -297,15 +323,17 @@
   (setq tss--current-active-p t)
   (tss--start-process))
 
-(defun tss-setup ()
-  "Do setup TSS for current buffer."
+;;;###autoload
+(defun tss-setup-current-buffer ()
+  "Do setup for using TSS in current buffer."
   (interactive)
   (yaxception:$
     (yaxception:try
       (when (tss--active-p)
-        (local-set-key (kbd "SPC") 'tss--insert-with-ac-trigger-command)
-        (local-set-key (kbd ".") 'tss--insert-with-ac-trigger-command)
-        (local-set-key (kbd ":") 'tss--insert-with-ac-trigger-command)
+        ;; Key binding
+        (loop for stroke in tss-ac-trigger-command-keys
+              if (not (string= stroke ""))
+              do (local-set-key (read-kbd-macro stroke) 'tss--insert-with-ac-trigger-command))
         (when (and (stringp tss-popup-help-key)
                    (not (string= tss-popup-help-key "")))
           (local-set-key (read-kbd-macro tss-popup-help-key) 'tss-popup-help))
@@ -318,7 +346,6 @@
         (add-to-list 'ac-sources 'ac-source-tss-new)
         (add-to-list 'ac-sources 'ac-source-tss-anything)
         (add-to-list 'ac-sources 'ac-source-tss-keyword)
-        (add-to-list 'ac-modes 'typescript-mode)
         (auto-complete-mode t)
         ;; For flymake
         (setq flymake-err-line-patterns '(("\\`\\(.+?\\.ts\\) (\\([0-9]+\\),\\([0-9]+\\)): \\(.+\\)" 1 2 3 4)))
@@ -331,6 +358,21 @@
       (tss--error "failed setup : %s\n%s"
                   (yaxception:get-text e)
                   (yaxception:get-stack-trace-string e)))))
+
+;;;###autoload
+(defun tss-config-default ()
+  "Do setting recommemded configuration."
+  ;; Activate auto-complete and setup TSS automatically when open tss-enable-modes buffer.
+  (loop for mode in tss-enable-modes
+        for hook = (intern-soft (concat (symbol-name mode) "-hook"))
+        do (add-to-list 'ac-modes mode)
+        if (and hook
+                (symbolp hook))
+        do (add-hook hook 'tss-setup-current-buffer t))
+  ;; Run flymake when save buffer.
+  (add-hook 'after-save-hook 'tss-run-flymake t)
+  ;; Delete tss process of the buffer when kill buffer.
+  (add-hook 'kill-buffer-hook 'tss--delete-process t))
 
 
 (defvar ac-source-tss-member
@@ -381,7 +423,7 @@
 
 (defun tss--active-p ()
   (and tss--current-active-p
-       (memq major-mode '(typescript-mode))
+       (memq major-mode tss-enable-modes)
        t))
 
 (defun* tss--get-server-response (cmdstr &key waitsec response-start-char response-end-char)
@@ -556,8 +598,6 @@
                (delete-process tss--proc))))
       (yaxception:catch 'error e
         (tss--error "failed delete process : %s" (yaxception:get-text e))))))
-
-(add-hook 'kill-buffer-hook 'tss--delete-process t t)
 
 (defun tss--start-process (&optional initializep)
   (when (not (executable-find "tss"))
