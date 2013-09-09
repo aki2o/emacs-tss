@@ -32,39 +32,29 @@ Emacs以外に必要なもの
 インストール
 ============
 
-インストールには、el-getを使うのを推奨します。  
-手動やauto-install.elでも良いですが、下記の依存拡張もそれぞれインストールする必要があります。
+### package.elを使う場合
+
+2013/09/10 melpaリポジトリからインストール可能  
 
 ### el-get.elを使う場合
 
-2013/08/10 と言いつつ、まだ利用できません。
-
-以下のように、el-get-sourcesに設定を追加すれば、el-getでインストールできるようになります。
-
-    (setq el-get-sources
-          '(
-            (:name log4e
-                   :website "https://github.com/aki2o/log4e"
-                   :description "provide logging framework for elisp."
-                   :type github
-                   :pkgname "aki2o/log4e")
-            (:name yaxception
-                   :website "https://github.com/aki2o/yaxception"
-                   :description "provide framework about exception like Java for elisp."
-                   :type github
-                   :pkgname "aki2o/yaxception")
-            (:name tss
-                   :website "https://github.com/aki2o/emacs-tss"
-                   :description "provide a interface for auto-complete.el/flymake.el on typescript-mode."
-                   :type github
-                   :pkgname "aki2o/emacs-tss"
-                   :depends (auto-complete log4e yaxception))
-            ))
+2013/08/10 と言いつつ、まだ利用できません。  
+2013/09/08 利用可能。ただし、masterブランチのみです。  
 
 ### auto-install.elを使う場合
 
-    (auto-install-from-url "https://raw.github.com/aki2o/emacs-tss/master/tss.el")
-    (auto-install-from-url "https://raw.github.com/aki2o/emacs-tss/master/typescript.el")
+```lisp
+(auto-install-from-url "https://raw.github.com/aki2o/emacs-tss/master/tss.el")
+(auto-install-from-url "https://raw.github.com/aki2o/emacs-tss/master/typescript.el")
+```
+
+※ 下記の依存拡張もそれぞれインストールする必要があります。  
+
+### 手動の場合
+
+tss.el/typescript.elをダウンロードし、load-pathの通った場所に配置して下さい。
+
+※ 下記の依存拡張もそれぞれインストールする必要があります。  
 
 ### 依存拡張
 
