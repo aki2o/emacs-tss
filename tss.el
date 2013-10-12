@@ -5,7 +5,7 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.3.0
+;; Version: 0.3.1
 ;; Package-Requires: ((auto-complete "1.4.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -341,11 +341,11 @@
                    (not (string= tss-jump-to-definition-key "")))
           (local-set-key (read-kbd-macro tss-jump-to-definition-key) 'tss-jump-to-definition))
         ;; For auto-complete
-        (add-to-list 'ac-sources 'ac-source-tss-member)
-        (add-to-list 'ac-sources 'ac-source-tss-type)
-        (add-to-list 'ac-sources 'ac-source-tss-new)
-        (add-to-list 'ac-sources 'ac-source-tss-anything)
-        (add-to-list 'ac-sources 'ac-source-tss-keyword)
+        (setq ac-sources '(ac-source-tss-member
+                           ac-source-tss-type
+                           ac-source-tss-new
+                           ac-source-tss-anything
+                           ac-source-tss-keyword))
         (auto-complete-mode t)
         ;; For flymake
         (setq flymake-err-line-patterns '(("\\`\\(.+?\\.ts\\) (\\([0-9]+\\),\\([0-9]+\\)): \\(.+\\)" 1 2 3 4)))
@@ -401,7 +401,7 @@
 
 (defvar ac-source-tss-anything
   '((candidates . tss--get-ac-non-member-candidates)
-    (prefix . "[^a-zA-Z0-9_.] *\\([a-zA-Z0-9_]+\\)")
+    (prefix . "\\(?:^\\|[^a-zA-Z0-9_.]\\) *\\([a-zA-Z0-9_]+\\)")
     (symbol . "a")
     (document . tss--get-ac-document)
     (requires . 1)
@@ -409,7 +409,7 @@
 
 (defvar ac-source-tss-keyword
   '((candidates . tss--get-ac-keyword-candidates)
-    (prefix . "[^a-zA-Z0-9_.] *\\([a-z]+\\)")
+    (prefix . "\\(?:^\\|[^a-zA-Z0-9_.]\\) *\\([a-zA-Z0-9_]+\\)")
     (symbol . "w")
     (document . tss--get-ac-document)
     (requires . 1)
@@ -480,9 +480,11 @@
                  t)))))))
 
 (defun tss--get-ac-member-candidates ()
+  (tss--trace "start get ac member candidates.")
   (tss--get-ac-candidates t))
 
 (defun tss--get-ac-non-member-candidates ()
+  (tss--trace "start get ac non member candidates.")
   (tss--get-ac-candidates nil))
 
 (defun tss--get-ac-candidates (memberp)
@@ -491,17 +493,12 @@
       (when (> tss--last-ac-start-point (point-max))
         (setq tss--last-ac-start-point (point-max)))
       (let* ((currpt (point))
-             (code (cond ((= currpt tss--last-ac-start-point)
-                          "")
-                         ((> currpt tss--last-ac-start-point)
-                          (buffer-substring-no-properties tss--last-ac-start-point currpt))
-                         (t
-                          (buffer-substring-no-properties currpt tss--last-ac-start-point)))))
-        (if (or (string= code "")
-                (and (> currpt tss--last-ac-start-point)
-                     (string-match "\\`[a-zA-Z0-9_]*\\'" code)))
-            tss--last-ac-candidates
-          (tss--trace "Start get ac candidates")
+             (code (buffer-substring-no-properties currpt tss--last-ac-start-point)))
+        (if (and (> currpt tss--last-ac-start-point)
+                 (string-match "\\`[a-zA-Z0-9_]+\\'" code))
+            (progn (tss--trace "Use last ac candidates. code[%s]" code)
+                   tss--last-ac-candidates)
+          (tss--trace "Start get ac candidates. code[%s]" code)
           (setq tss--last-ac-start-point currpt)
           (setq tss--last-ac-candidates
                 (when (tss--sync-server)
@@ -509,7 +506,9 @@
                          (memberarg (cond (memberp "true")
                                           (t       "false")))
                          (fpath (expand-file-name (buffer-file-name)))
-                         (cmdstr (format "completions-brief %s %s %s" memberarg posarg fpath))
+                         (cmdnm (cond (memberp "completions")
+                                      (t       "completions-brief")))
+                         (cmdstr (format "%s %s %s %s" cmdnm memberarg posarg fpath))
                          (ret (tss--get-server-response cmdstr :waitsec 3))
                          (entries (when (listp ret)
                                     (cdr (assoc 'entries ret)))))
@@ -529,9 +528,10 @@
       (tss--error "failed get ac candidates : %s\n%s"
                   (yaxception:get-text e)
                   (yaxception:get-stack-trace-string e))
-      nil)))
+      (setq tss--last-ac-candidates nil))))
 
 (defun tss--get-ac-keyword-candidates ()
+  (tss--trace "start get ac keyword candidates.")
   (mapcar (lambda (s)
             (tss--debug "Got candidate name[%s] kind[builtin-keyword] type[]" s)
             (propertize s 'tss--ac-cand-kind "builtin-keyword"))
@@ -541,7 +541,8 @@
   (yaxception:$
     (yaxception:try
       (if (not (stringp selected))
-          ""
+          (progn (tss--warn "Can't get ac document : Not string is '%s'" selected)
+                 "")
         (tss--trace "Start get ac document : %s" selected)
         (let ((kind (get-text-property 0 'tss--ac-cand-kind selected))
               (type (get-text-property 0 'tss--ac-cand-type selected))
