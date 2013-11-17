@@ -653,9 +653,8 @@
                                   (tss--trace "Finished getting json response")
                                   (setq tss--server-response (json-read-from-string tss--incomplete-server-response))
                                   (setq tss--incomplete-server-response "")))
-                  if (or
-                      (string-match (concat "^" (regexp-quote (format "\"loaded %s" fpath))) line)
-                      (string= line (format "\"updated %s\"" fpath)))
+                  if (or (string-match (concat "^\"loaded " (regexp-quote fpath)) line)
+                         (string-match (concat "^\"updated " (regexp-quote fpath)) line))
                   return (progn (tss--debug "Got other response : %s" line)
                                 (setq tss--server-response t))
                   if (string-match "\\`\"TSS +\\(.+\\)\"\\'" line)
