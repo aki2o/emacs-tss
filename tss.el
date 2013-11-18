@@ -5,7 +5,7 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.3.1
+;; Version: 0.3.2
 ;; Package-Requires: ((auto-complete "1.4.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -642,7 +642,12 @@
                    (buffer-live-p buff))
           (with-current-buffer buff
             (loop with fpath = (expand-file-name (buffer-file-name))
+                  with endre = (rx-to-string `(and bol "\"" (or "loaded" "updated" "added")
+                                                   (+ space) ,fpath))
                   for line in (split-string res "[\r\n]+")
+                  if (string= line "null")
+                  return (progn (tss--debug "Got null response")
+                                (setq tss--server-response 'null))
                   if (and (not (string= line ""))
                           (or (not (string= tss--incomplete-server-response ""))
                               (string= (substring line 0 1) tss--json-response-start-char)))
@@ -653,8 +658,7 @@
                                   (tss--trace "Finished getting json response")
                                   (setq tss--server-response (json-read-from-string tss--incomplete-server-response))
                                   (setq tss--incomplete-server-response "")))
-                  if (or (string-match (concat "^\"loaded " (regexp-quote fpath)) line)
-                         (string-match (concat "^\"updated " (regexp-quote fpath)) line))
+                  if (string-match endre line)
                   return (progn (tss--debug "Got other response : %s" line)
                                 (setq tss--server-response t))
                   if (string-match "\\`\"TSS +\\(.+\\)\"\\'" line)
