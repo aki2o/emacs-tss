@@ -620,6 +620,7 @@
       (process-query-on-exit-flag proc)
       (setq tss--server-response nil)
       (setq tss--incomplete-server-response "")
+      (setq tss--json-braces-balance 0)
       (setq tss--json-response-start-char "")
       (setq tss--json-response-end-char "")
       (while (and (< waiti 50)
@@ -631,6 +632,20 @@
       (cond (initializep (message "[TSS] Loaded '%s'." (buffer-name)))
             (t           (message "[TSS] Reloaded '%s'." (buffer-name))))
       (setq tss--proc proc))))
+
+(defun tss--count-character (char string)
+  "Counts the number of occurences of char in string"
+  (let ((current-index 0)
+        (count 0)
+        (reg (regexp-quote char)))
+    (while (numberp current-index)
+      (setq current-index (string-match reg string current-index))
+      (when (numberp current-index)
+        (progn
+          (setq count (1+ count))
+          (setq current-index (1+ current-index)))))
+    count))
+    
 
 (defun tss--receive-server-response (proc res)
   (tss--trace "Received server response.\n%s" res)
@@ -653,8 +668,10 @@
                               (string= (substring line 0 1) tss--json-response-start-char)))
                   return (progn (tss--debug "Got json response : %s" line)
                                 (setq tss--incomplete-server-response (concat tss--incomplete-server-response line))
-                                (when (string= (substring tss--incomplete-server-response -1)
-                                               tss--json-response-end-char)
+                                (setq tss--json-braces-balance (+ tss--json-braces-balance
+                                                                  (- (tss--count-character tss--json-response-start-char line)
+                                                                     (tss--count-character tss--json-response-end-char line))))
+                                (when (eq tss--json-braces-balance 0)
                                   (tss--trace "Finished getting json response")
                                   (setq tss--server-response (json-read-from-string tss--incomplete-server-response))
                                   (setq tss--incomplete-server-response "")))
