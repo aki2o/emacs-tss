@@ -5,8 +5,8 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.3.2
-;; Package-Requires: ((auto-complete "1.4.0") (log4e "0.2.0") (yaxception "0.1"))
+;; Version: 0.3.3
+;; Package-Requires: ((auto-complete "1.4.0") (json-mode "1.1.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 ;; - typescript.el ( see <http://www.typescriptlang.org/> )
 ;; - typescript-tools ( see <https://github.com/clausreinke/typescript-tools> )
 ;; - auto-complete.el ( see <https://github.com/auto-complete/auto-complete> )
+;; - json-mode.el ( see <https://github.com/joshwnj/json-mode> )
 ;; - yaxception.el ( see <https://github.com/aki2o/yaxception> )
 ;; - log4e.el ( see <https://github.com/aki2o/log4e> )
 
@@ -99,6 +100,7 @@
 ;; - Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
 ;; - typescript-tools ... Version For Typescript v0.9
 ;; - auto-complete.el ... Version 1.4.0
+;; - json-mode.el ... Version 1.1.0
 ;; - yaxception.el ... Version 0.1
 ;; - log4e.el ... Version 0.2.0
 
@@ -108,6 +110,7 @@
 
 (eval-when-compile (require 'cl))
 (require 'auto-complete)
+(require 'json-mode)
 (require 'json)
 (require 'ring)
 (require 'etags)
@@ -477,7 +480,7 @@
                  nil)
                 (t
                  (tss--trace "Finished sync server.")
-                 t)))))))
+                 (eq tss--server-response 'succeed))))))))
 
 (defun tss--get-ac-member-candidates ()
   (tss--trace "start get ac member candidates.")
@@ -628,9 +631,33 @@
         (sleep-for 0.2)
         (incf waiti))
       (tss--info "Finished start tss process.")
-      (cond (initializep (message "[TSS] Loaded '%s'." (buffer-name)))
-            (t           (message "[TSS] Reloaded '%s'." (buffer-name))))
-      (setq tss--proc proc))))
+      (setq tss--proc proc)
+      (when (eq tss--server-response 'succeed)
+        (cond (initializep (message "[TSS] Loaded '%s'." (buffer-name)))
+              (t           (message "[TSS] Reloaded '%s'." (buffer-name))))
+        t))))
+
+(defun tss--balance-json-brace-p (str startbrace endbrace)
+  (if (or (string= startbrace "")
+          (string= endbrace ""))
+      t
+    (and (string= (substring str 0 1) startbrace)
+         (string= (substring str -1) endbrace)
+         ;; (let* ((str (replace-regexp-in-string "\".*?[^\\\\]\"" "" str)) ; delete part of some text
+         ;;        (str (replace-regexp-in-string "\"\"" "" str))           ; delete part of empty text
+         ;;        (str (replace-regexp-in-string "\"[^\"]*\\'" "" str))    ; delete part of imcomplete text
+         ;;        (delstartstr (replace-regexp-in-string (regexp-quote startbrace) "" str))
+         ;;        (delendstr (replace-regexp-in-string (regexp-quote endbrace) "" str))
+         ;;        (len (length str)))
+         ;;   (= (- len (length delstartstr))
+         ;;      (- len (length delendstr)))))))
+         ;; Use json-mode as substitute for self parsing
+         (with-temp-buffer
+           (insert str)
+           (json-mode)
+           (goto-char (point-max))
+           (ignore-errors (backward-list))
+           (= (point) (point-min))))))
 
 (defun tss--receive-server-response (proc res)
   (tss--trace "Received server response.\n%s" res)
@@ -653,23 +680,26 @@
                               (string= (substring line 0 1) tss--json-response-start-char)))
                   return (progn (tss--debug "Got json response : %s" line)
                                 (setq tss--incomplete-server-response (concat tss--incomplete-server-response line))
-                                (when (string= (substring tss--incomplete-server-response -1)
-                                               tss--json-response-end-char)
+                                (when (tss--balance-json-brace-p tss--incomplete-server-response
+                                                                 tss--json-response-start-char
+                                                                 tss--json-response-end-char)
                                   (tss--trace "Finished getting json response")
                                   (setq tss--server-response (json-read-from-string tss--incomplete-server-response))
                                   (setq tss--incomplete-server-response "")))
                   if (string-match endre line)
                   return (progn (tss--debug "Got other response : %s" line)
-                                (setq tss--server-response t))
+                                (setq tss--server-response 'succeed))
                   if (string-match "\\`\"TSS +\\(.+\\)\"\\'" line)
                   do (tss--handle-err-response (match-string-no-properties 1 line)))))))
     (yaxception:catch 'json-error e
       (tss--warn "failed parse response : %s" (yaxception:get-text e))
-      (setq tss--server-response t))
+      (setq tss--server-response 'failed))
     (yaxception:catch 'error e
       (tss--error "failed receive server response : %s\n%s"
                   (yaxception:get-text e)
-                  (yaxception:get-stack-trace-string e)))))
+                  (yaxception:get-stack-trace-string e))
+      (setq tss--server-response 'failed)
+      (message "[TSS] Failed receive TSS response : %s" (yaxception:get-text e)))))
 
 (defun tss--handle-err-response (res)
   (cond ((string= res "closing")

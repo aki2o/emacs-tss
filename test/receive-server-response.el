@@ -4,7 +4,7 @@
 
 (expectations
   (desc "receive-server-response get loaded")
-  (expect t
+  (expect 'succeed
     (let ((tfile (tenv-get-tmp-file "tss" "restest" nil t)))
       (with-current-buffer (find-file-noselect tfile)
         (erase-buffer)
@@ -28,7 +28,7 @@
         (tss--receive-server-response tss--proc "var s1;\n")
         tss--server-response)))
   (desc "receive-server-response get updated")
-  (expect t
+  (expect 'succeed
     (let ((tfile (tenv-get-tmp-file "tss" "restest" nil t)))
       (with-current-buffer (find-file-noselect tfile)
         (setq tss--server-response nil)
@@ -83,7 +83,7 @@
         (tss--receive-server-response tss--proc "{\"c\":false}]}")
         tss--server-response)))
   (desc "receive-server-response get added")
-  (expect t
+  (expect 'succeed
     (let ((tfile (tenv-get-tmp-file "tss" "restest" nil t)))
       (with-current-buffer (find-file-noselect tfile)
         (setq tss--server-response nil)
@@ -111,6 +111,28 @@
         (setq tss--json-response-start-char "")
         (setq tss--json-response-end-char "")
         (tss--receive-server-response tss--proc "null\n\n")
+        tss--server-response)))
+  (desc "receive-server-response get json unbalance brace start")
+  (expect nil
+    (let ((tfile (tenv-get-tmp-file "tss" "restest" nil t)))
+      (with-current-buffer (find-file-noselect tfile)
+        (setq tss--server-response nil)
+        (setq tss--incomplete-server-response "")
+        (setq tss--json-response-start-char "{")
+        (setq tss--json-response-end-char "}")
+        (tss--receive-server-response tss--proc "{\"a\":true,\"b\":[")
+        tss--server-response)))
+  (desc "receive-server-response get json unbalance brace not yet finished")
+  (expect nil
+    (let ((tfile (tenv-get-tmp-file "tss" "restest" nil t)))
+      (with-current-buffer (find-file-noselect tfile)
+        (tss--receive-server-response tss--proc "{\"c\":false}")
+        tss--server-response)))
+  (desc "receive-server-response get json unbalance brace finished")
+  (expect '((b . [((c . :json-false))]) (a . t))
+    (let ((tfile (tenv-get-tmp-file "tss" "restest" nil t)))
+      (with-current-buffer (find-file-noselect tfile)
+        (tss--receive-server-response tss--proc "]}")
         tss--server-response)))
   )
 
