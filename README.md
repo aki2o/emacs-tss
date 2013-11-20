@@ -60,6 +60,7 @@ Download tss.el/typescript.el and put on your load-path.
 ### Dependency
 
 * [auto-complete.el](https://github.com/auto-complete/auto-complete)
+* [json-mode.el](https://github.com/joshwnj/json-mode)
 * [log4e.el](https://github.com/aki2o/log4e)
 * [yaxception.el](https://github.com/aki2o/yaxception)
 
@@ -158,6 +159,7 @@ Tested On
 * Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
 * typescript-tools ... master branch
 * auto-complete.el ... 1.4.0
+* json-mode.el ... 1.1.0
 * log4e.el ... 0.1
 * yaxception.el ... 0.1
 

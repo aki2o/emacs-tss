@@ -59,6 +59,7 @@ tss.el/typescript.elをダウンロードし、load-pathの通った場所に配
 ### 依存拡張
 
 * [auto-complete.el](https://github.com/auto-complete/auto-complete)
+* [json-mode.el](https://github.com/joshwnj/json-mode)
 * [log4e.el](https://github.com/aki2o/log4e)
 * [yaxception.el](https://github.com/aki2o/yaxception)
 
@@ -160,6 +161,7 @@ Typescriptでは参照などにより、外部ファイルの機能を利用す�
 * Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
 * typescript-tools ... master branch
 * auto-complete.el ... 1.4.0
+* json-mode.el ... 1.1.0
 * log4e.el ... 0.2.0
 * yaxception.el ... 0.1
 
