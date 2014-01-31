@@ -119,8 +119,8 @@ Configuration
 ```
 
 
-Attention
-=========
+Consideration
+=============
 
 ### Activation
 
