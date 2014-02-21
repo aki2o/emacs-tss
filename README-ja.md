@@ -103,17 +103,12 @@ Typescript編集のための拡張が、[公式サイト](http://www.typescriptl
 
 (require 'tss)
 
-;; ポイントしている要素についてのヘルプをポップアップ表示するキー
+;; キーバインド
 (setq tss-popup-help-key "C-:")
-
-;; ポイントしている要素の定義元へジャンプするキー
 (setq tss-jump-to-definition-key "C->")
 
-;; 本拡張を有効にしたいモードを追加/変更する場合
-(add-to-list 'tss-enable-modes 'hoge-mode)
-
-;; 入力と同時にauto-complete.elの補完を開始したいキーを追加/変更する場合
-(add-to-list 'tss-ac-trigger-command-keys "=")
+;; 必要に応じて適宜カスタマイズして下さい。以下のS式を評価することで項目についての情報が得られます。
+;; (customize-group "tss")
 
 ;; 推奨設定を行う
 (tss-config-default)

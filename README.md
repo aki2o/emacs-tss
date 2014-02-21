@@ -49,13 +49,13 @@ Install
 (auto-install-from-url "https://raw.github.com/aki2o/emacs-tss/master/typescript.el")
 ```
 
-**Note:** Installing each the following dependency is required in this case.
+\* Installing each the following dependency is required in this case.
 
 ### Manually
 
 Download tss.el/typescript.el and put on your load-path.
 
-**Note:** Installing each the following dependency is required in this case.
+\* Installing each the following dependency is required in this case.
 
 ### Dependency
 
@@ -90,8 +90,8 @@ So, I have bundled typescript.el as modified version of the official TypeScript.
     > 
     >   (run-mode-hooks 'typescript-mode-hook))
 
-**Note:** It maybe happen that update of the official version is not merged into typescript.el.  
-**Note:** The last date of checking merge is 2013/08/10.  
+\* It maybe happen that update of the official version is not merged into typescript.el.  
+\* The last date of checking merge is 2013/08/10.  
 
 
 Configuration
@@ -108,11 +108,8 @@ Configuration
 (setq tss-popup-help-key "C-:")
 (setq tss-jump-to-definition-key "C->")
 
-;; If there is the mode, which you want to enable TSS,
-(add-to-list 'tss-enable-modes 'hoge-mode)
-
-;; If there is the key, which you want to start completion of auto-complete.el,
-(add-to-list 'tss-ac-trigger-command-keys "=")
+;; Make config suit for you. About the config item, eval the following sexp.
+;; (customize-group "tss")
 
 ;; Do setting recommemded configuration
 (tss-config-default)
@@ -131,7 +128,7 @@ If you meet the following condition, do not need to do anything.
 
 Otherwise, need M-x `tss-setup-current-buffer` for activation in typescript-mode.  
 
-**Note:** Not activate on the buffer of the mode not included in `tss-enable-modes`.  
+\* Not activate on the buffer of the mode not included in `tss-enable-modes`.  
 
 ### Deactivation by trouble at typescript-tools
 

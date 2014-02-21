@@ -5,7 +5,7 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.4.0
+;; Version: 0.4.1
 ;; Package-Requires: ((auto-complete "1.4.0") (json-mode "1.1.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,8 @@
 ;; (setq tss-popup-help-key "C-:")
 ;; (setq tss-jump-to-definition-key "C->")
 ;; 
-;; ;; About other configuration, eval (customize-group "tss")
+;; ;; Make config suit for you. About the config item, see Customization or eval the following sexp.
+;; ;; (customize-group "tss")
 ;; 
 ;; (tss-config-default)
 
