@@ -5,7 +5,7 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.3.3
+;; Version: 0.4.0
 ;; Package-Requires: ((auto-complete "1.4.0") (json-mode "1.1.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -53,13 +53,8 @@
 ;; (setq tss-popup-help-key "C-:")
 ;; (setq tss-jump-to-definition-key "C->")
 ;; 
-;; ;; If there is the mode, which you want to enable TSS,
-;; (add-to-list 'tss-enable-modes 'hoge-mode)
+;; ;; About other configuration, eval (customize-group "tss")
 ;; 
-;; ;; If there is the key, which you want to start completion of auto-complete.el,
-;; (add-to-list 'tss-ac-trigger-command-keys "=")
-;; 
-;; ;; Do setting recommemded configuration
 ;; (tss-config-default)
 
 ;;; Customization:
@@ -116,6 +111,7 @@
 (require 'etags)
 (require 'flymake)
 (require 'eldoc)
+(require 'pos-tip nil t)
 (require 'log4e)
 (require 'yaxception)
 
@@ -204,12 +200,17 @@
       (if (not tss--last-send-string-failed-p)
           (setq tss--last-send-string-failed-p t)
         (setq tss--current-active-p nil)
-        (popup-tip (concat "Stopped TSS by errored on TypeScript Services Server.\n"
-                           "Maybe it be caused by the incomplete source code in buffer.\n"
-                           "At later, execute `tss-restart-current-buffer' for restart TSS."))
+        (tss--popup-tip (concat "Stopped TSS by errored on TypeScript Services Server.\n"
+                                "Maybe it be caused by the incomplete source code in buffer.\n"
+                                "At later, execute `tss-restart-current-buffer' for restart TSS."))
         (sleep-for 2))
       nil)))
 
+(defun tss--popup-tip (text)
+  (if (and (functionp 'ac-quick-help-use-pos-tip-p)
+           (ac-quick-help-use-pos-tip-p))
+      (pos-tip-show text 'popup-tip-face nil nil 300 popup-tip-max-width)
+    (popup-tip text)))
 
 ;;;###autoload
 (defun tss-popup-help ()
@@ -226,7 +227,7 @@
                (kind (when (listp ret) (cdr (assoc 'kind ret))))
                (type (when (listp ret) (cdr (assoc 'type ret))))
                (doc (when (listp ret) (cdr (assoc 'docComment ret)))))
-          (popup-tip (tss--get-any-document name kind type doc)))))
+          (tss--popup-tip (tss--get-any-document name kind type doc)))))
     (yaxception:catch 'error e
       (message "[TSS] %s" (yaxception:get-text e))
       (tss--error "failed popup help : %s\n%s"
