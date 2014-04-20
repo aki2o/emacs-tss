@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'el-expectations)
+(require 'ert-expectations)
 
 (expectations
   (desc "balance-json-brace-p not brace")
