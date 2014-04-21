@@ -32,8 +32,8 @@
     (stub tss--sync-server => t)
     (stub tss--active-p => t)
     (stub tss--get-server-response => '((type . "number") (limChar . 1014) (minChar . 1007) (kind . "property") (fullSymbolName . "Harness.ScriptInfo.version") (docComment . "hogege") (memberName (text . "number") (suffix . "") (prefix . ""))))
-    (let* ((tfile (tenv-get-tmp-file "tss" "popuptest" nil t)))
+    (let* ((tfile (tenv-get-tmp-file "tss" "popuptest" nil t))
+           (ac-quick-help-prefer-pos-tip nil))
       (with-current-buffer (find-file-noselect tfile)
         (tss-popup-help))))
   )
-

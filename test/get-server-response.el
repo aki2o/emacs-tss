@@ -20,6 +20,10 @@
     (tss--get-server-response "symbol 3 2 /tmp/hoge"))
   (desc "get-server-response config about response")
   (expect t
+    (stub tss--active-p => t)
+    (stub tss--get-process => nil)
+    (stub tss--send-string => nil)
+    (tss--get-server-response "symbol 3 2 /tmp/hoge")
     (and (string= tss--json-response-start-char "{")
          (string= tss--json-response-end-char "}")))
   )

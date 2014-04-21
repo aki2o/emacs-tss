@@ -12,7 +12,7 @@
     (stub tss--active-p => t)
     (stub tss--get-process => nil)
     (stub process-send-string => nil)
-    (let* ((tfile (tenv-get-tmp-file "tss" "sync" nil t))
+    (let* ((tfile (tenv-get-tmp-file "tss" "sync.ts" nil t))
            (ret (with-current-buffer (find-file-noselect tfile)
                   (erase-buffer)
                   (insert "var s1;\nvar s2;\n")
@@ -21,7 +21,7 @@
       ret))
   (desc "sync-server cmdstr")
   (expect t
-    (let* ((tfile (tenv-get-tmp-file "tss" "sync" nil t)))
+    (let* ((tfile (tenv-get-tmp-file "tss" "sync.ts" nil t)))
       (with-current-buffer (get-buffer " *log4e-tss*")
         (goto-char (point-max))
         (when (search-backward "Start sync server" nil t)
@@ -29,7 +29,7 @@
                    (concat "Start sync server : update 2 " tfile))))))
   (desc "sync-server config about response")
   (expect t
-    (let* ((tfile (tenv-get-tmp-file "tss" "sync" nil t)))
+    (let* ((tfile (tenv-get-tmp-file "tss" "sync.ts" nil t)))
       (with-current-buffer (find-file-noselect tfile)
         (and (string= tss--json-response-start-char "")
              (string= tss--json-response-end-char "")))))
@@ -37,7 +37,7 @@
   (expect t
     (stub tss-run-flymake => nil)
     (stub tss--active-p => t)
-    (let* ((tfile (tenv-get-tmp-file "tss" "sync" nil t))
+    (let* ((tfile (tenv-get-tmp-file "tss" "sync.ts" nil t))
            (ret (with-current-buffer (find-file-noselect tfile)
                   (tss--start-process)
                   (goto-char (point-max))
@@ -46,4 +46,3 @@
       (save-buffer)
       ret))
   )
-
