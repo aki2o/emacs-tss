@@ -1,37 +1,32 @@
-[Japanese](https://github.com/aki2o/emacs-tss/blob/master/README-ja.md)
+![Japanese](https://github.com/aki2o/emacs-tss/blob/master/README-ja.md)
 
-What's this?
-============
+[![Build Status](https://travis-ci.org/aki2o/emacs-tss.svg?branch=master)](https://travis-ci.org/aki2o/emacs-tss)
 
-This is a extension of Emacs that provides completion/syntax-check by using typescript-tools in typescrript-mode.
+# What's this?
 
-About typescript-tools, see https://github.com/clausreinke/typescript-tools
+This is a extension of Emacs that provides completion/syntax-check by using typescript-tools in typescrript-mode.  
 
+About typescript-tools, see <https://github.com/clausreinke/typescript-tools>
 
-Feature
-=======
+# Feature
 
-* **Auto completion by auto-complete.el**
+### Auto completion by auto-complete.el
 
 ![demo1](image/demo1.png)
 
-* **Popup help by popup.el**
+### Popup help by popup.el
 
 ![demo2](image/demo2.png)
 
-* **Jump to definition**
+### Jump to definition
 
-* **Check syntax by flymake.el**
+### Check syntax by flymake.el
 
+# Requirement
 
-Requirement
-===========
+-   ![typescript-tools](https://github.com/clausreinke/typescript-tools)
 
-* [typescript-tools](https://github.com/clausreinke/typescript-tools)
-
-
-Install
-=======
+# Install
 
 ### If use package.el
 
@@ -48,54 +43,51 @@ Install
 (auto-install-from-url "https://raw.github.com/aki2o/emacs-tss/master/tss.el")
 (auto-install-from-url "https://raw.github.com/aki2o/emacs-tss/master/typescript.el")
 ```
-
-\* Installing each the following dependency is required in this case.
+-   In this case, you need to install each of the following dependency.
 
 ### Manually
 
-Download tss.el/typescript.el and put on your load-path.
-
-\* Installing each the following dependency is required in this case.
+Download tss.el and put it on your load-path.  
+-   In this case, you need to install each of the following dependency.
 
 ### Dependency
 
-* [auto-complete.el](https://github.com/auto-complete/auto-complete)
-* [json-mode.el](https://github.com/joshwnj/json-mode)
-* [log4e.el](https://github.com/aki2o/log4e)
-* [yaxception.el](https://github.com/aki2o/yaxception)
+-   ![auto-complete.el](https://github.com/auto-complete/auto-complete)
+-   ![json-mode.el](https://github.com/joshwnj/json-mode)
+-   ![log4e.el](https://github.com/aki2o/log4e)
+-   ![yaxception.el](https://github.com/aki2o/yaxception)
 
 ### About official TypeScript.el
 
-[The official site](http://www.typescriptlang.org/) provides TypeScript.el for Emacs.  
+![The official site](http://www.typescriptlang.org/) provides TypeScript.el for Emacs.  
 But the official Typescript.el has some trouble ( wrong syntax, have no hook ).  
-So, I have bundled typescript.el as modified version of the official TypeScript.el.  
+So, I have bundled typescript.el as modified version of the official TypeScript.el.
 
-#### Modification from the official version
+### Modification from the official version
 
-    $ diff TypeScript.el typescript.el
-    66c66
-    < (declare-function ido-mode "ido" ())
-    ---
-    > (declare-function ido-mode "ido")
-    486a487,491
-    > (defcustom typescript-mode-hook nil
-    >   "*Hook called by `typescript-mode'."
-    >   :type 'hook
-    >   :group 'typescript)
-    > 
-    3351c3356,3358
-    <     (font-lock-fontify-buffer)))
-    ---
-    >     (font-lock-fontify-buffer))
-    > 
-    >   (run-mode-hooks 'typescript-mode-hook))
+```
+$ diff TypeScript.el typescript.el
+66c66
+< (declare-function ido-mode "ido" ())
+---
+> (declare-function ido-mode "ido")
+486a487,491
+> (defcustom typescript-mode-hook nil
+>   "*Hook called by `typescript-mode'."
+>   :type 'hook
+>   :group 'typescript)
+> 
+3351c3356,3358
+<     (font-lock-fontify-buffer)))
+---
+>     (font-lock-fontify-buffer))
+> 
+>   (run-mode-hooks 'typescript-mode-hook))
+```
+-   It maybe happen that update of the official version is not merged into typescript.el
+-   The last date of checking merge is 2013/08/10
 
-\* It maybe happen that update of the official version is not merged into typescript.el.  
-\* The last date of checking merge is 2013/08/10.  
-
-
-Configuration
-=============
+# Configuration
 
 ```lisp
 ;; If use bundled typescript.el,
@@ -115,51 +107,38 @@ Configuration
 (tss-config-default)
 ```
 
-
-Consideration
-=============
+# Consideration
 
 ### Activation
 
-If you meet the following condition, do not need to do anything.
-
-* use bundled typescript.el
-* use `tss-config-default` setting
+If you meet the following condition, do not need to do anything.  
+-   use bundled typescript.el
+-   use `tss-config-default` setting
 
 Otherwise, need M-x `tss-setup-current-buffer` for activation in typescript-mode.  
 
-\* Not activate on the buffer of the mode not included in `tss-enable-modes`.  
+-   Not activate on the buffer of the mode not included in `tss-enable-modes`
 
 ### Deactivation by trouble at typescript-tools
 
 The function of this extension depends on typescript-tools.  
 And, typescript-tools may become impossible depending on the contents of the buffer.  
 If it happened, For avoiding Emacs performance degradation,  
-this extention is deactivated automatically and the following popup notification is shown.
+this extention is deactivated automatically and the following popup notification is shown.  
 
 ![alert](image/alert.png)
 
 The above case is caused by the contents of the buffer.  
 So, typescript-tools maybe back to normal by activation after editing of the buffer.  
-If you want to activate this extension again, do M-x `tss-restart-current-buffer`.
+If you want to activate this extension again, do M-x `tss-restart-current-buffer`.  
 
-### Reflection of modified other file
+# Tested On
 
-In Typescript, can import definition of other file using `///<reference path='...'>` and so on.  
-But, this extension can not notice update of them automatically.  
-If you want to reflect update of them into current buffer, do M-x `tss-reload-current-project`.
-
-
-Tested On
-=========
-
-* Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
-* typescript-tools ... master branch
-* auto-complete.el ... 1.4.0
-* json-mode.el ... 1.1.0
-* log4e.el ... 0.1
-* yaxception.el ... 0.1
-
+-   Emacs &#x2026; GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
+-   typescript-tools &#x2026; master branch
+-   auto-complete.el &#x2026; 1.4.0
+-   json-mode.el &#x2026; 1.1.0
+-   log4e.el &#x2026; 0.2.0
+-   yaxception.el &#x2026; 0.2.0
 
 **Enjoy!!!**
-
