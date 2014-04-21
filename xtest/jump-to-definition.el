@@ -35,6 +35,15 @@
       (tss-jump-to-definition)
       (and (string= (buffer-file-name) tfile)
            (= (point) 13))))
+  (desc "jump-to-definition jump to exist file for new format")
+  (expect t
+    (stub tss--sync-server => t)
+    (stub tss--active-p => t)
+    (stub tss--get-server-response => '((lim . ((character . 32) (line . 15))) (min . ((character . 5) (line . 2))) (file . "/tmp/.emacs.tenv.tss/jumptest") (def (containerName . "Harness.ScriptInfo") (containerKind . "") (name . "version") (kind . "property") (limChar . 548) (minChar . 525) (unitIndex . 2))))
+    (let* ((tfile (tenv-get-tmp-file "tss" "jumptest" nil t)))
+      (tss-jump-to-definition)
+      (and (string= (buffer-file-name) tfile)
+           (= (point) 13))))
   (desc "jump-to-definition not jump to not exist file")
   (expect t
     (stub tss--sync-server => t)
