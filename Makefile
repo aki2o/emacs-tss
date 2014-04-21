@@ -15,9 +15,9 @@ test:
 	ret=0
 	for f in $$(find test -type f -name "*.el"); do \
 		${CASK} exec ${EMACS} -Q --batch -L . -l $$f -f batch-expectations; \
-	    test $? -ne 0 && ret=1 \
+	    test $$? -ne 0 && ret=1 \
 	done
-	test $ret -eq 0
+	test $$ret -eq 0
 
 clean:
 	rm -f tss.elc
