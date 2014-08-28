@@ -280,7 +280,9 @@
         (tss--debug "Start run flymake")
         (tss--sync-server)
         (setq flymake-last-change-time nil)
-        (setq flymake-check-start-time (flymake-float-time))
+        (setq flymake-check-start-time (if (functionp 'flymake-float-time)
+                                           (flymake-float-time)
+                                         (float-time)))
         (let* ((ret (tss--get-server-response "showErrors"
                                               :waitsec 2
                                               :response-start-char "["
