@@ -5,7 +5,7 @@
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
 ;; URL: https://github.com/aki2o/emacs-tss
-;; Version: 0.5.0
+;; Version: 0.5.1
 ;; Package-Requires: ((auto-complete "1.4.0") (json-mode "1.1.0") (log4e "0.2.0") (yaxception "0.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -672,13 +672,14 @@
     (yaxception:try
       (let* ((buffnm (replace-regexp-in-string "^typescript-service-" "" (process-name proc)))
              (buff (get-buffer buffnm)))
-        (when (and (stringp res)
-                   (buffer-live-p buff))
+        (if (not (buffer-live-p buff))
+            (progn (tss--warn "Source buffer is not alive : %s" buffnm)
+                   (ignore-errors (delete-process proc)))
           (with-current-buffer buff
             (loop with fpath = (expand-file-name (buffer-file-name))
                   with endre = (rx-to-string `(and bol "\"" (or "loaded" "updated" "added")
                                                    (+ space) ,fpath))
-                  for line in (split-string res "[\r\n]+")
+                  for line in (split-string (or res "") "[\r\n]+")
                   if (string= line "null")
                   return (progn (tss--debug "Got null response")
                                 (setq tss--server-response 'null))
@@ -709,6 +710,7 @@
       (message "[TSS] Failed receive TSS response : %s" (yaxception:get-text e)))))
 
 (defun tss--handle-err-response (res)
+  (tss--trace "Handle error response : %s" res)
   (cond ((string= res "closing")
          nil)
         ((string-match "\\`command syntax error:" res)
