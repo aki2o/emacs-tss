@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'ert-expectations)
+(require 'el-expectations)
 
 (expectations
   (desc "get-server-response when not active")

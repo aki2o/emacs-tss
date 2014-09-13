@@ -1,6 +1,6 @@
 (require 'tss)
 (require 'typescript)
-(require 'ert-expectations)
+(require 'el-expectations)
 (require 'tenv)
 
 (expectations

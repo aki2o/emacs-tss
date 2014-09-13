@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'ert-expectations)
+(require 'el-expectations)
 (require 'tenv)
 
 (expectations

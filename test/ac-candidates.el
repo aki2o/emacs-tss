@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'ert-expectations)
+(require 'el-expectations)
 (require 'tenv)
 
 (expectations
@@ -25,7 +25,7 @@
         (goto-char (point-max))
         (when (search-backward "cmdstr" nil t)
           (string= (buffer-substring-no-properties (point) (point-at-eol))
-                   (concat "cmdstr[completions true 1 6 " tfile "] waitsec[3]"))))))
+                   (concat "cmdstr[completions true 1 6 " tfile "] waitsec[2]"))))))
   (desc "ac-candidates call for non-member")
   (expect t
     (stub tss--sync-server => t)
@@ -40,7 +40,7 @@
         (goto-char (point-max))
         (when (search-backward "cmdstr" nil t)
           (string= (buffer-substring-no-properties (point) (point-at-eol))
-                   (concat "cmdstr[completions-brief false 2 7 " tfile "] waitsec[3]"))))))
+                   (concat "cmdstr[completions-brief false 2 7 " tfile "] waitsec[2]"))))))
   (desc "ac-candidates get")
   (expect "version is PROPERTY.\n\nType: Number\n\nhogege\n"
     (stub tss--sync-server => t)
@@ -51,6 +51,6 @@
                   (goto-char (point-min))
                   (tss--get-ac-member-candidates))))
       (when (= (length ret) 2)
-        (tss--get-ac-document (nth 0 ret)))))
+        (popup-item-documentation (nth 0 ret)))))
   )
 
