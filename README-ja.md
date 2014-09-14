@@ -17,9 +17,19 @@ typescript-toolsについては、以下を参照して下さい。
 
 ![demo2](image/demo2.png)
 
-### 定義元ジャンプ
+### eldoc.elによるメソッドシグネチャ表示
+
+![eldoc](image/eldoc.png)
 
 ### flymake.elによる文法チェック
+
+![flymake](image/flymake.png)
+
+### 定義元ジャンプ
+
+### 継承定義の自動入力
+
+![impl](image/impl.gif)
 
 # Emacs以外に必要なもの
 
@@ -98,6 +108,7 @@ $ diff TypeScript.el typescript.el
 ;; キーバインド
 (setq tss-popup-help-key "C-:")
 (setq tss-jump-to-definition-key "C->")
+(setq tss-implement-definition-key "C-c i")
 
 ;; 必要に応じて適宜カスタマイズして下さい。以下のS式を評価することで項目についての情報が得られます。
 ;; (customize-group "tss")
@@ -129,7 +140,9 @@ $ diff TypeScript.el typescript.el
 
 解析不能な状態になる原因はバッファの内容にあるため、  
 バッファを変更すれば本拡張を再度有効にしても正常に動作するかも知れません。  
-M-x `tss-restart-current-buffer` とすることで、本拡張を再度有効にすることができます。
+M-x `tss-restart-current-buffer` とすることで、本拡張を再度有効にすることができます。  
+
+また、もし本拡張を停止させたい場合には、M-x `tss-stop-current-buffer` して下さい。  
 
 ### 参照ファイルの更新内容の反映
 

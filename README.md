@@ -18,9 +18,19 @@ About typescript-tools, see <https://github.com/clausreinke/typescript-tools>
 
 ![demo2](image/demo2.png)
 
-### Jump to definition
+### Echo method signature by eldoc.el
+
+![eldoc](image/eldoc.png)
 
 ### Check syntax by flymake.el
+
+![flymake](image/flymake.png)
+
+### Jump to definition
+
+### Implement inherit definition
+
+![impl](image/impl.gif)
 
 # Requirement
 
@@ -99,6 +109,7 @@ $ diff TypeScript.el typescript.el
 ;; Key binding
 (setq tss-popup-help-key "C-:")
 (setq tss-jump-to-definition-key "C->")
+(setq tss-implement-definition-key "C-c i")
 
 ;; Make config suit for you. About the config item, eval the following sexp.
 ;; (customize-group "tss")
@@ -131,6 +142,15 @@ this extention is deactivated automatically and the following popup notification
 The above case is caused by the contents of the buffer.  
 So, typescript-tools maybe back to normal by activation after editing of the buffer.  
 If you want to activate this extension again, do M-x `tss-restart-current-buffer`.  
+
+Also, if you want to stop to use typescript-tools, do M-x `tss-stop-current-buffer`.
+
+### Reflection of the update of referenced path
+
+You can get the external definition using `/// <reference path\`"&#x2026;=.  
+But typescript-tools can not find the update of that.  
+You have to do M-x `tss-reload-current-project`
+if you updated the external definition of current buffer.  
 
 # Tested On
 
