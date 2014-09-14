@@ -147,7 +147,7 @@ Also, if you want to stop to use typescript-tools, do M-x `tss-stop-current-buff
 
 ### Reflection of the update of referenced path
 
-You can get the external definition using `/// <reference path`"&#x2026;=.  
+You can get the external definition using `/// <reference path ...`.  
 But typescript-tools can not find the update of that.  
 You have to do M-x `tss-reload-current-project`
 if you updated the external definition of current buffer.  
