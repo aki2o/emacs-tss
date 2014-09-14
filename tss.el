@@ -93,6 +93,8 @@
 ;; Reload project data for current buffer.
 ;; `tss-restart-current-buffer'
 ;; Restart TSS for current buffer.
+;; `tss-stop-current-buffer'
+;; Stop TSS for current buffer.
 ;; `tss-setup-current-buffer'
 ;; Do setup for using TSS in current buffer.
 ;; 
@@ -385,7 +387,8 @@
                (when waitp (sleep-for 1)))
               (t
                (process-send-string tss--proc "quit\n")
-               (delete-process tss--proc))))
+               (delete-process tss--proc)))
+        t)
       (yaxception:catch 'error e
         (tss--error "failed delete process : %s" (yaxception:get-text e))))))
 
@@ -1112,6 +1115,14 @@
   (setq tss--last-send-string-failed-p nil)
   (setq tss--current-active-p t)
   (tss--start-process))
+
+;;;###autoload
+(defun tss-stop-current-buffer ()
+  "Stop TSS for current buffer."
+  (interactive)
+  (setq tss--current-active-p nil)
+  (when (tss--delete-process nil t)
+    (tss--show-message "Stopped '%s'." (buffer-name))))
 
 ;;;###autoload
 (defun tss-setup-current-buffer ()
