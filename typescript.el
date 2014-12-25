@@ -3371,4 +3371,4 @@ Key bindings:
 (provide 'typescript)
 
 ;; arch-tag: 1a0d0409-e87f-4fc7-a58c-3731c66ddaac
-;; typescript.el ends here
+;;; typescript.el ends here
