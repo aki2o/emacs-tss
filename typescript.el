@@ -1814,15 +1814,18 @@ nil."
 (defun typescript-c-fill-paragraph (&optional justify)
   "Fill the paragraph with `c-fill-paragraph'."
   (interactive "*P")
-  (flet ((c-forward-sws
-          (&optional limit)
-          (typescript--forward-syntactic-ws limit))
-         (c-backward-sws
-          (&optional limit)
-          (typescript--backward-syntactic-ws limit))
-         (c-beginning-of-macro
-          (&optional limit)
-          (typescript--beginning-of-macro limit)))
+  ;; Dynamically replace functions using the lexically scoped cl-letf.
+  ;; See below for more details:
+  ;; http://endlessparentheses.com/understanding-letf-and-how-it-replaces-flet.html
+  (cl-letf (((symbol-function 'c-forward-sws)
+             (lambda  (&optional limit)
+               (typescript--forward-syntactic-ws limit)))
+            ((symbol-function 'c-backward-sws)
+             (lambda  (&optional limit)
+               (typescript--backward-syntactic-ws limit)))
+            ((symbol-function 'c-beginning-of-macro)
+             (lambda  (&optional limit)
+               (typescript--beginning-of-macro limit))))
     (let ((fill-paragraph-function 'c-fill-paragraph))
       (c-fill-paragraph justify))))
 
