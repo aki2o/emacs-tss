@@ -51,14 +51,14 @@
   (require 'imenu)
   (require 'etags)
   (require 'thingatpt)
+  (require 'ido)
+  (require 'comint)
   (require 'easymenu)
   (require 'moz nil t)
   (require 'typescripton nil t))
 
 (eval-when-compile
-  (require 'cl)
-  (require 'comint)
-  (require 'ido))
+  (require 'cl))
 
 (defvar inferior-moz-buffer)
 (defvar moz-repl-name)
