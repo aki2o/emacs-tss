@@ -3352,8 +3352,11 @@ Key bindings:
   ;; will mysteriously disappear.
   (font-lock-set-defaults)
 
-  (let (font-lock-keywords) ; leaves syntactic keywords intact
-    (font-lock-fontify-buffer))
+  (let (font-lock-keywords)         ; leaves syntactic keywords intact
+    ;; Avoid byte-compilation errors.  `font-lock-fontify-buffer' is
+    ;; marked as interactive only in Emacs 25.
+    (with-no-warnings
+      (font-lock-fontify-buffer)))
 
   (run-mode-hooks 'typescript-mode-hook))
 
