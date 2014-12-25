@@ -20,7 +20,7 @@
 ;;     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;; -------------------------------------------------------------------------------------------
 
-;;; Commentary
+;;; Commentary:
 
 ;; This is based on Karl Landstrom's barebones typescript-mode. This
 ;; is much more robust and works with cc-mode's comment filling
