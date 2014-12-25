@@ -5,17 +5,17 @@
 ;;     Unmodified original sourve available at http://www.karllandstrom.se/downloads/emacs/javascript.el
 ;;     Copyright (c) 2008 Free Software Foundation
 ;;     Portions Copyright (C) Microsoft Open Technologies, Inc. All rights reserved.
-;; 
+;;
 ;;     This program is free software: you can redistribute it and/or modify
 ;;     it under the terms of the GNU General Public License as published by
 ;;     the Free Software Foundation, either version 3 of the License, or
 ;;     (at your option) any later version.
-;; 
+;;
 ;;     This program is distributed in the hope that it will be useful,
 ;;     but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;     GNU General Public License for more details.
-;; 
+;;
 ;;     You should have received a copy of the GNU General Public License
 ;;     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;; -------------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@
 ;; This is based on Karl Landstrom's barebones typescript-mode. This
 ;; is much more robust and works with cc-mode's comment filling
 ;; (mostly).
-;; The modifications to the original javascript.el mode mainly consisted in 
+;; The modifications to the original javascript.el mode mainly consisted in
 ;; replacing "javascript" with "typescript"
 ;;
 ;; The main features of this typescript mode are syntactic
@@ -33,7 +33,7 @@
 ;; `global-font-lock-mode'), automatic indentation and filling of
 ;; comments, C preprocessor fontification, and MozRepl integration.
 ;;
-;; 
+;;
 ;; General Remarks:
 ;;
 ;; XXX: This mode assumes that block comments are not nested inside block
@@ -285,8 +285,8 @@ Match group 1 is the name of the macro.")
      "function" "goto" "if" "implements" "import" "in"
      "instanceof" "interface" "module" "new" "null" "number"
       "private" "public" "return" "static" "string"
-     "super" "switch"  "this" "throw" "true" 
-     "try" "typeof" "var" "void" 
+     "super" "switch"  "this" "throw" "true"
+     "try" "typeof" "var" "void"
      "while" ))
   "Regexp matching any typescript keyword.")
 
