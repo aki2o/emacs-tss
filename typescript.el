@@ -2977,15 +2977,15 @@ browser, respectively."
                   ;; Highlighting tab
                   ((fourth hitab)
                    (push '(typescript! ((fourth hitab) "setAttribute")
-                               "style"
-                               "color: red; font-weight: bold")
+                                       "style"
+                                       "color: red; font-weight: bold")
                          cmds)
 
                    ;; Highlight window proper
                    (push '(typescript! ((third hitab)
-                                "setAttribute")
-                               "style"
-                               "border: 8px solid red")
+                                        "setAttribute")
+                                       "style"
+                                       "border: 8px solid red")
                          cmds)
 
                    ;; Select tab, when appropriate
@@ -2997,10 +2997,10 @@ browser, respectively."
                   ;; Hilighting whole window
                   ((third hitab)
                    (push '(typescript! ((third hitab) "document"
-                                "documentElement" "setAttribute")
-                               "style"
-                               (concat "-moz-appearance: none;"
-                                       "border: 8px solid red;"))
+                                        "documentElement" "setAttribute")
+                                       "style"
+                                       (concat "-moz-appearance: none;"
+                                               "border: 8px solid red;"))
                          cmds)))
 
                  (cond
@@ -3014,8 +3014,8 @@ browser, respectively."
                   ;; Unhighlighting window
                   ((third unhitab)
                    (push '(typescript! ((third unhitab) "document"
-                                "documentElement" "setAttribute")
-                               "style" "")
+                                        "documentElement" "setAttribute")
+                                       "style" "")
                          cmds)))
 
                  (eval (list 'with-typescript
@@ -3037,14 +3037,14 @@ browser, respectively."
                             (null (fourth matched-tab))
                             (equal "navigator:browser"
                                    (typescript! ((third matched-tab)
-                                         "document"
-                                         "documentElement"
-                                         "getAttribute")
-                                        "windowtype")))
+                                                 "document"
+                                                 "documentElement"
+                                                 "getAttribute")
+                                                "windowtype")))
 
                    (loop with tab-to-match = (typescript< (third matched-tab)
-                                                  "gBrowser"
-                                                  "selectedTab")
+                                                          "gBrowser"
+                                                          "selectedTab")
 
                          with index = 0
                          for match in ido-matches
