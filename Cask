@@ -3,6 +3,7 @@
 (source marmalade)
 
 (package-file "tss.el")
+(files "typescript.el")
 
 (depends-on "auto-complete" "1.4.0")
 (depends-on "json-mode" "1.1.0")
