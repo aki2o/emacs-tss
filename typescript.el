@@ -3274,8 +3274,11 @@ If one hasn't been set, or if it's stale, prompt for a new one."
 
 ;;; Main Function
 
+(defalias 'typescript-parent-mode
+  (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
+
 ;;;###autoload
-(define-derived-mode typescript-mode nil "typescript"
+(define-derived-mode typescript-mode typescript-parent-mode "typescript"
   "Major mode for editing typescript.
 
 Key bindings:
