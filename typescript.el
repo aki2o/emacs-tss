@@ -55,7 +55,7 @@
   (require 'comint)
   (require 'easymenu)
   (require 'moz nil t)
-  (require 'typescripton nil t))
+  (require 'json nil t))
 
 (eval-when-compile
   (require 'cl))
@@ -2235,20 +2235,19 @@ Otherwise, use the current value of `process-mark'."
 (defconst typescript--moz-interactor
   (replace-regexp-in-string
    "[ \n]+" " "
-   ; */" Make Emacs happy
 "(function(repl) {
-  repl.defineInteractor('typescript', {
+  repl.defineInteractor('js', {
     onStart: function onStart(repl) {
-      if(!repl._typescriptObjects) {
-        repl._typescriptObjects = {};
-        repl._typescriptLastID = 0;
-        repl._typescriptGC = this._typescriptGC;
+      if(!repl._jsObjects) {
+        repl._jsObjects = {};
+        repl._jsLastID = 0;
+        repl._jsGC = this._jsGC;
       }
       this._input = '';
     },
 
-    _typescriptGC: function _typescriptGC(ids_in_use) {
-      var objects = this._typescriptObjects;
+    _jsGC: function _jsGC(ids_in_use) {
+      var objects = this._jsObjects;
       var keys = [];
       var num_freed = 0;
 
@@ -2366,8 +2365,8 @@ Otherwise, use the current value of `process-mark'."
       return eval(s);
     },
 
-    _callEval: function(thisobj, typescript) {
-      return eval.call(thisobj, typescript);
+    _callEval: function(thisobj, js) {
+      return eval.call(thisobj, js);
     },
 
     getPrompt: function getPrompt(repl) {
@@ -2402,7 +2401,7 @@ Otherwise, use the current value of `process-mark'."
         }
       }
 
-      var ret = repl._typescriptObjects[id];
+      var ret = repl._jsObjects[id];
       if(ret === undefined) {
         throw new Error('No object with id:' + id + '(' + typeof id + ')');
       }
@@ -2416,16 +2415,16 @@ Otherwise, use the current value of `process-mark'."
                         + value)
       }
 
-      for(var id in repl._typescriptObjects) {
+      for(var id in repl._jsObjects) {
         id = Number(id);
-        var obj = repl._typescriptObjects[id];
+        var obj = repl._jsObjects[id];
         if(obj === value) {
           return id;
         }
       }
 
-      var id = ++repl._typescriptLastID;
-      repl._typescriptObjects[id] = value;
+      var id = ++repl._jsLastID;
+      repl._jsObjects[id] = value;
       return id;
     },
 
@@ -2517,8 +2516,8 @@ Otherwise, use the current value of `process-mark'."
         ret = ['error', x.toString() ];
       }
 
-      var TYPESCRIPTON = Components.classes['@mozilla.org/dom/typescripton;1'].createInstance(Components.interfaces.nsITYPESCRIPTON);
-      repl.print(TYPESCRIPTON.encode(ret));
+      var JSON = Components.classes['@mozilla.org/dom/json;1'].createInstance(Components.interfaces.nsIJSON);
+      repl.print(JSON.encode(ret));
       repl._prompt();
     },
 
@@ -2544,13 +2543,14 @@ Otherwise, use the current value of `process-mark'."
 
   "String to set MozRepl up into a simple-minded evaluation mode.")
 
+
 (defun typescript--typescript-encode-value (x)
-  "Marshall the given value for TYPESCRIPT.
-Strings and numbers are TYPESCRIPTON-encoded.  Lists (including nil) are
+  "Marshall the given value for Typescript.
+Strings and numbers are JSON-encoded.  Lists (including nil) are
 made into typescript array literals and their contents encoded
 with `typescript--typescript-encode-value'."
-  (cond ((stringp x) (typescripton-encode-string x))
-        ((numberp x) (typescripton-encode-number x))
+  (cond ((stringp x) (json-encode-string x))
+        ((numberp x) (json-encode-number x))
         ((symbolp x) (format "{objid:%S}" (symbol-name x)))
         ((typescript--typescript-handle-p x)
 
@@ -2792,8 +2792,8 @@ argument as a function."
        (goto-char comint-last-input-end)
 
        ;; Read the result
-       (let* ((typescripton-array-type 'list)
-              (result (prog1 (typescripton-read)
+       (let* ((json-array-type 'list)
+              (result (prog1 (json-read)
                         (goto-char (point-max)))))
          (typescript--typescript-decode-retval result))))))
 
@@ -2860,7 +2860,7 @@ With argument, run even if no intervening GC has happened."
 (run-with-idle-timer 30 t #'typescript-gc)
 
 (defun typescript-eval (typescript)
-  "Evaluate the typescript in TYPESCRIPT and return TYPESCRIPTON-decoded result."
+  "Evaluate the typescript and return JSON-decoded result."
   (interactive "Mtypescript to evaluate: ")
   (with-typescript
    (let* ((content-window (typescript--typescript-content-window
@@ -3228,7 +3228,7 @@ If one hasn't been set, or if it's stale, prompt for a new one."
             (with-temp-buffer
               (insert typescript--typescript-inserter)
               (insert "(")
-              (insert (typescripton-encode-list defun-info))
+              (insert (json-encode-list defun-info))
               (insert ",\n")
               (insert defun-body)
               (insert "\n)")
