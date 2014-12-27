@@ -4,25 +4,24 @@
 (expectations
   (desc "get-server-response when not active")
   (expect nil
-    (stub tss--active-p => nil)
     (tss--get-server-response "symbol 3 2 /tmp/hoge"))
   (desc "get-server-response when failed send string")
   (expect nil
-    (stub tss--active-p => t)
     (stub tss--get-process => nil)
-    (stub tss--send-string => nil)
+    (stub process-send-string => nil)
+    (add-to-list 'tss-enable-modes major-mode)
     (tss--get-server-response "symbol 3 2 /tmp/hoge"))
   (desc "get-server-response when timeout")
   (expect nil
-    (stub tss--active-p => t)
     (stub tss--get-process => nil)
-    (stub tss--send-string => t)
+    (stub process-send-string => t)
+    (add-to-list 'tss-enable-modes major-mode)
     (tss--get-server-response "symbol 3 2 /tmp/hoge"))
   (desc "get-server-response config about response")
   (expect t
-    (stub tss--active-p => t)
     (stub tss--get-process => nil)
-    (stub tss--send-string => nil)
+    (stub process-send-string => nil)
+    (add-to-list 'tss-enable-modes major-mode)
     (tss--get-server-response "symbol 3 2 /tmp/hoge")
     (and (string= tss--json-response-start-char "{")
          (string= tss--json-response-end-char "}")))
