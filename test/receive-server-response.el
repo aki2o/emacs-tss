@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'el-expectations)
+(require 'ert-expectations)
 (require 'tenv)
 
 (expectations
@@ -135,4 +135,3 @@
         (tss--receive-server-response tss--proc "]}")
         tss--server-response)))
   )
-

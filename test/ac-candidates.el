@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'el-expectations)
+(require 'ert-expectations)
 (require 'tenv)
 
 (expectations
@@ -53,4 +53,3 @@
       (when (= (length ret) 2)
         (popup-item-documentation (nth 0 ret)))))
   )
-

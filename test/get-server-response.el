@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'el-expectations)
+(require 'ert-expectations)
 
 (expectations
   (desc "get-server-response when not active")
@@ -27,4 +27,3 @@
     (and (string= tss--json-response-start-char "{")
          (string= tss--json-response-end-char "}")))
   )
-

@@ -1,5 +1,5 @@
 (require 'tss)
-(require 'el-expectations)
+(require 'ert-expectations)
 
 (expectations
   (desc "balance-json-brace-p not brace")
@@ -42,4 +42,3 @@
   (expect t
     (tss--balance-json-brace-p "{\"a\":true,\"b\":\"\\\"}\"}" "{" "}"))
   )
-
