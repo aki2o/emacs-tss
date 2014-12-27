@@ -1,4 +1,4 @@
-language: emacs-lisp
+language: c
 env:
   # - EMACS=emacs23
   - EMACS=emacs24
