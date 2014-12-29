@@ -73,30 +73,6 @@ Download tss.el and put it on your load-path.
 But the official Typescript.el has some trouble ( wrong syntax, have no hook ).  
 So, I have bundled typescript.el as modified version of the official TypeScript.el.
 
-### Modification from the official version
-
-```
-$ diff TypeScript.el typescript.el
-66c66
-< (declare-function ido-mode "ido" ())
----
-> (declare-function ido-mode "ido")
-486a487,491
-> (defcustom typescript-mode-hook nil
->   "*Hook called by `typescript-mode'."
->   :type 'hook
->   :group 'typescript)
-> 
-3351c3356,3358
-<     (font-lock-fontify-buffer)))
----
->     (font-lock-fontify-buffer))
-> 
->   (run-mode-hooks 'typescript-mode-hook))
-```
--   It maybe happen that update of the official version is not merged into typescript.el
--   The last date of checking merge is 2013/08/10
-
 # Configuration
 
 ```lisp
