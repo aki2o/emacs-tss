@@ -1,6 +1,6 @@
 ;;; tss.el --- provide a interface for auto-complete.el/flymake.el on typescript-mode.
 
-;; Copyright (C) 2013  Hiroaki Otsu
+;; Copyright (C) 2013-2014  Hiroaki Otsu
 
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
@@ -22,17 +22,17 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; 
+;;
 ;; This extension is a interface for typescript-tools.
 ;; This extension provides the following on typescript-mode.
 ;;  - Auto completion by using auto-complete.el
 ;;  - Check syntax by using flymake.el
-;; 
+;;
 ;; For more infomation,
 ;; see <https://github.com/aki2o/emacs-tss/blob/master/README.md>
 
 ;;; Dependency:
-;; 
+;;
 ;; - typescript.el ( see <http://www.typescriptlang.org/> )
 ;; - typescript-tools ( see <https://github.com/clausreinke/typescript-tools> )
 ;; - auto-complete.el ( see <https://github.com/auto-complete/auto-complete> )
@@ -44,22 +44,24 @@
 ;;
 ;; Put this to your load-path.
 ;; And put the following lines in your .emacs or site-start.el file.
-;; 
+;;
 ;; (require 'tss)
 
 ;;; Configuration:
-;; 
+;;
 ;; ;; Key Binding
 ;; (setq tss-popup-help-key "C-:")
 ;; (setq tss-jump-to-definition-key "C->")
-;; 
-;; ;; Make config suit for you. About the config item, see Customization or eval the following sexp.
-;; ;; (customize-group "tss")
-;; 
+;;
+;; Make config suit for you. About the config item, see Customization
+;; or eval the following sexp.
+;;
+;; (customize-group "tss")
+;;
 ;; (tss-config-default)
 
 ;;; Customization:
-;; 
+;;
 ;; [EVAL] (autodoc-document-lisp-buffer :type 'user-variable :prefix "tss-[^\-]" :docstring t)
 ;; `tss-popup-help-key'
 ;; Keystroke for `tss-popup-help' at point.
@@ -75,11 +77,11 @@
 ;; Faces not considered a code part.
 ;; `tss-ac-summary-truncate-length'
 ;; Length for truncation of candidate summary of auto-complete.el.
-;; 
+;;
 ;;  *** END auto-documentation
 
 ;;; API:
-;; 
+;;
 ;; [EVAL] (autodoc-document-lisp-buffer :type 'command :prefix "tss-[^\-]" :docstring t)
 ;; `tss-popup-help'
 ;; Popup help about anything at point.
@@ -97,12 +99,14 @@
 ;; Stop TSS for current buffer.
 ;; `tss-setup-current-buffer'
 ;; Do setup for using TSS in current buffer.
-;; 
+;;
 ;;  *** END auto-documentation
-;; [Note] Functions and variables other than listed above, Those specifications may be changed without notice.
+;;
+;; [Note] Functions and variables other than listed above, Those
+;; specifications may be changed without notice.
 
 ;;; Tested On:
-;; 
+;;
 ;; - Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
 ;; - typescript-tools ... Version For Typescript v0.9
 ;; - auto-complete.el ... Version 1.4.0
@@ -113,6 +117,7 @@
 
 ;; Enjoy!!!
 
+;;; Code:
 
 (eval-when-compile (require 'cl))
 (require 'auto-complete)
@@ -127,7 +132,6 @@
 (require 'helm nil t)
 (require 'log4e)
 (require 'yaxception)
-
 
 (defgroup tss nil
   "Auto completion / Flymake for TypeScript."
@@ -195,16 +199,18 @@
 ;;;;;;;;;;;;;
 ;; Utility
 
-(defvar tss--builtin-keywords '("var" "function" "module" "class" "interface" "enum" "constructor" "get" "set"
-                                "export" "import" "extends" "implements" "declare" "public" "private" "static"
-                                "void" "any" "null" "true" "false" "undefined" "number" "boolean" "string"
-                                "if" "else" "for" "while" "until" "do" "in" "switch" "case" "default" "with"
-                                "return" "new" "break" "continue" "this" "super"))
+(defvar tss--builtin-keywords
+  '("any" "break" "case" "class" "constructor" "continue" "declare" "default"
+    "do" "enum" "export" "extends" "false" "function" "get" "implements"
+    "import" "in" "interface" "module" "new" "null" "number" "private" "public"
+    "return" "set" "static" "super" "switch" "this" "true" "undefined" "until"
+    "var" "void" "while" "with"))
 
-(defvar tss--builtin-special-comments '(("reference" . ("path" "no-default-lib"))
-                                        ("summary"   . nil)
-                                        ("param"     . ("name" "type"))
-                                        ("value"     . ("type"))))
+(defvar tss--builtin-special-comments
+  '(("reference" . ("path" "no-default-lib"))
+    ("summary"   . nil)
+    ("param"     . ("name" "type"))
+    ("value"     . ("type"))))
 
 (defvar tss--last-send-string-failed-p nil)
 (make-variable-buffer-local 'tss--last-send-string-failed-p)
@@ -255,9 +261,11 @@
       (if (not tss--last-send-string-failed-p)
           (setq tss--last-send-string-failed-p t)
         (setq tss--current-active-p nil)
-        (tss--popup-tip (concat "Stopped TSS by errored on TypeScript Services Server.\n"
-                                "Maybe it be caused by the incomplete source code in buffer.\n"
-                                "At later, execute `tss-restart-current-buffer' for restart TSS."))
+        (tss--popup-tip
+         (concat
+          "Stopped TSS by errored on TypeScript Services Server.\n"
+          "Maybe it be caused by the incomplete source code in buffer.\n"
+          "At later, execute `tss-restart-current-buffer' for restart TSS."))
         (sleep-for 2))
       nil)))
 
@@ -284,7 +292,8 @@
   (save-excursion
     (loop with limitpt = (or limitpt (point-min))
           for pt = (loop with depth = 1
-                         for bspt = (or (save-excursion (tss--search-backward-in-code "(" limitpt))
+                         for bspt = (or (save-excursion
+                                          (tss--search-backward-in-code "(" limitpt))
                                         (point-min))
                          for bept = (or (save-excursion (tss--search-backward-in-code ")" limitpt))
                                         (point-min))
@@ -760,7 +769,7 @@
 (defun tss--get-ac-summary (sum)
   (when (stringp sum)
     (let ((str (replace-regexp-in-string "\r?\n" " " sum)))
-      (truncate-string-to-width 
+      (truncate-string-to-width
        str tss-ac-summary-truncate-length 0 nil "..."))))
 
 (defun tss--get-ac-document (name kind type doc)
