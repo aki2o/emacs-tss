@@ -1,5 +1,3 @@
-![Japanese](https://github.com/aki2o/emacs-tss/blob/master/README-ja.md)
-
 [![Build Status](https://travis-ci.org/aki2o/emacs-tss.svg?branch=master)](https://travis-ci.org/aki2o/emacs-tss)
 
 # What's this?
@@ -34,7 +32,7 @@ About typescript-tools, see <https://github.com/clausreinke/typescript-tools>
 
 # Requirement
 
--   ![typescript-tools](https://github.com/clausreinke/typescript-tools)
+- [typescript-tools](https://github.com/clausreinke/typescript-tools)
 
 # Install
 
@@ -62,10 +60,10 @@ Download tss.el and put it on your load-path.
 
 ### Dependency
 
--   ![auto-complete.el](https://github.com/auto-complete/auto-complete)
--   ![json-mode.el](https://github.com/joshwnj/json-mode)
--   ![log4e.el](https://github.com/aki2o/log4e)
--   ![yaxception.el](https://github.com/aki2o/yaxception)
+- [auto-complete.el](https://github.com/auto-complete/auto-complete)
+- [json-mode.el](https://github.com/joshwnj/json-mode)
+- [log4e.el](https://github.com/aki2o/log4e)
+- [yaxception.el](https://github.com/aki2o/yaxception)
 
 ### About official TypeScript.el
 
