@@ -127,14 +127,3 @@ You can get the external definition using `/// <reference path ...`.
 But typescript-tools can not find the update of that.  
 You have to do M-x `tss-reload-current-project`
 if you updated the external definition of current buffer.  
-
-# Tested On
-
--   Emacs &#x2026; GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
--   typescript-tools &#x2026; master branch
--   auto-complete.el &#x2026; 1.4.0
--   json-mode.el &#x2026; 1.1.0
--   log4e.el &#x2026; 0.2.0
--   yaxception.el &#x2026; 0.2.0
-
-**Enjoy!!!**
