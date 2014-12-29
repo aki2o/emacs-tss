@@ -194,11 +194,12 @@
 ;;;;;;;;;;;;;
 ;; Utility
 
-(defvar tss--builtin-keywords '("var" "function" "module" "class" "interface" "enum" "constructor" "get" "set"
-                                "export" "import" "extends" "implements" "declare" "public" "private" "static"
-                                "void" "any" "null" "true" "false" "undefined" "number" "boolean" "string"
-                                "if" "else" "for" "while" "until" "do" "in" "switch" "case" "default" "with"
-                                "return" "new" "break" "continue" "this" "super"))
+(defvar tss--builtin-keywords
+  '("any" "break" "case" "class" "constructor" "continue" "declare" "default"
+    "do" "enum" "export" "extends" "false" "function" "get" "implements"
+    "import" "in" "interface" "module" "new" "null" "number" "private" "public"
+    "return" "set" "static" "super" "switch" "this" "true" "undefined" "until"
+    "var" "void" "while" "with"))
 
 (defvar tss--builtin-special-comments '(("reference" . ("path" "no-default-lib"))
                                         ("summary"   . nil)
