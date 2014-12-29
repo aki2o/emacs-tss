@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/aki2o/emacs-tss.svg?branch=master)](https://travis-ci.org/aki2o/emacs-tss)
 
-# What's this?
+# TSS - **T**ype**S**cript **S**upport for Emacs
 
 This is a extension of Emacs that provides completion/syntax-check by using typescript-tools in typescrript-mode.  
 
