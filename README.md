@@ -2,17 +2,18 @@
 
 # TSS - **T**ype**S**cript **S**upport for Emacs
 
-This is a extension of Emacs that provides completion/syntax-check by using typescript-tools in typescrript-mode.  
+TSS provides the Emacs major mode, `typescript-mode`.
+`typescript-mode` provides intellisense-style completion and
+syntax-checking by using
+[typescript-tools](https://github.com/clausreinke/typescript-tools).
 
-About typescript-tools, see <https://github.com/clausreinke/typescript-tools>
+# Features
 
-# Feature
-
-### Auto completion by auto-complete.el
+### Auto completion with auto-complete.el
 
 ![demo1](image/demo1.png)
 
-### Popup help by popup.el
+### Popup help with popup.el
 
 ![demo2](image/demo2.png)
 
@@ -30,22 +31,41 @@ About typescript-tools, see <https://github.com/clausreinke/typescript-tools>
 
 ![impl](image/impl.gif)
 
-# Requirement
+# External Requirements
+
+TSS will provide basic support for typescript files without typescript
+tools.  However, if you want auto-completion and jump-to-definition,
+you need typescript-tools.
+
+typescript-tools is a node package, so you will need node.js installed
+on your system.
 
 - [typescript-tools](https://github.com/clausreinke/typescript-tools)
 
-# Install
+```
+npm install -g typescript-tools
+```
 
-### If use package.el
+# Installing TSS
 
-2013/09/10 It's available by using melpa.  
+### With MELPA
 
-### If use el-get.el
+First, add the package repository.
 
-2013/08/10 Not yet available.  
-2013/09/08 It's available. But, master branch only.  
+```lisp
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+```
 
-### If use auto-install.el
+Then install `tss`:
+
+<kbd>M-x package-install RET tss RET</kbd>
+
+### El-Get
+
+<kbd>M-x el-get-install RET tss RET</kbd>
+
+### auto-install.el
 
 ```lisp
 (auto-install-from-url "https://raw.github.com/aki2o/emacs-tss/master/tss.el")
@@ -55,8 +75,8 @@ About typescript-tools, see <https://github.com/clausreinke/typescript-tools>
 
 ### Manually
 
-Download tss.el and put it on your load-path.  
--   In this case, you need to install each of the following dependency.
+Download tss.el and put it on your load-path and download the
+dependencies
 
 ### Dependency
 
@@ -67,9 +87,10 @@ Download tss.el and put it on your load-path.
 
 ### About official TypeScript.el
 
-![The official site](http://www.typescriptlang.org/) provides TypeScript.el for Emacs.  
-But the official Typescript.el has some trouble ( wrong syntax, have no hook ).  
-So, I have bundled typescript.el as modified version of the official TypeScript.el.
+The [official TypeScript site](http://www.typescriptlang.org/)
+provides TypeScript.el for Emacs.  But the official file hasn't been
+updated since Jan 2013 and lacks some the newer syntax.  This
+typescript.el provides updated support for Typescript.
 
 # Configuration
 
@@ -96,32 +117,32 @@ So, I have bundled typescript.el as modified version of the official TypeScript.
 
 ### Activation
 
-If you meet the following condition, do not need to do anything.  
+If you meet the following condition, do not need to do anything.
 -   use bundled typescript.el
 -   use `tss-config-default` setting
 
-Otherwise, need M-x `tss-setup-current-buffer` for activation in typescript-mode.  
+Otherwise, need M-x `tss-setup-current-buffer` for activation in typescript-mode.
 
 -   Not activate on the buffer of the mode not included in `tss-enable-modes`
 
 ### Deactivation by trouble at typescript-tools
 
-The function of this extension depends on typescript-tools.  
-And, typescript-tools may become impossible depending on the contents of the buffer.  
-If it happened, For avoiding Emacs performance degradation,  
-this extention is deactivated automatically and the following popup notification is shown.  
+The function of this extension depends on typescript-tools.
+And, typescript-tools may become impossible depending on the contents of the buffer.
+If it happened, For avoiding Emacs performance degradation,
+this extention is deactivated automatically and the following popup notification is shown.
 
 ![alert](image/alert.png)
 
-The above case is caused by the contents of the buffer.  
-So, typescript-tools maybe back to normal by activation after editing of the buffer.  
-If you want to activate this extension again, do M-x `tss-restart-current-buffer`.  
+The above case is caused by the contents of the buffer.
+So, typescript-tools maybe back to normal by activation after editing of the buffer.
+If you want to activate this extension again, do M-x `tss-restart-current-buffer`.
 
 Also, if you want to stop to use typescript-tools, do M-x `tss-stop-current-buffer`.
 
 ### Reflection of the update of referenced path
 
-You can get the external definition using `/// <reference path ...`.  
-But typescript-tools can not find the update of that.  
+You can get the external definition using `/// <reference path ...`.
+But typescript-tools can not find the update of that.
 You have to do M-x `tss-reload-current-project`
-if you updated the external definition of current buffer.  
+if you updated the external definition of current buffer.
