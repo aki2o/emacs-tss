@@ -22,17 +22,17 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; 
+;;
 ;; This extension is a interface for typescript-tools.
 ;; This extension provides the following on typescript-mode.
 ;;  - Auto completion by using auto-complete.el
 ;;  - Check syntax by using flymake.el
-;; 
+;;
 ;; For more infomation,
 ;; see <https://github.com/aki2o/emacs-tss/blob/master/README.md>
 
 ;;; Dependency:
-;; 
+;;
 ;; - typescript.el ( see <http://www.typescriptlang.org/> )
 ;; - typescript-tools ( see <https://github.com/clausreinke/typescript-tools> )
 ;; - auto-complete.el ( see <https://github.com/auto-complete/auto-complete> )
@@ -44,22 +44,22 @@
 ;;
 ;; Put this to your load-path.
 ;; And put the following lines in your .emacs or site-start.el file.
-;; 
+;;
 ;; (require 'tss)
 
 ;;; Configuration:
-;; 
+;;
 ;; ;; Key Binding
 ;; (setq tss-popup-help-key "C-:")
 ;; (setq tss-jump-to-definition-key "C->")
-;; 
+;;
 ;; ;; Make config suit for you. About the config item, see Customization or eval the following sexp.
 ;; ;; (customize-group "tss")
-;; 
+;;
 ;; (tss-config-default)
 
 ;;; Customization:
-;; 
+;;
 ;; [EVAL] (autodoc-document-lisp-buffer :type 'user-variable :prefix "tss-[^\-]" :docstring t)
 ;; `tss-popup-help-key'
 ;; Keystroke for `tss-popup-help' at point.
@@ -75,11 +75,11 @@
 ;; Faces not considered a code part.
 ;; `tss-ac-summary-truncate-length'
 ;; Length for truncation of candidate summary of auto-complete.el.
-;; 
+;;
 ;;  *** END auto-documentation
 
 ;;; API:
-;; 
+;;
 ;; [EVAL] (autodoc-document-lisp-buffer :type 'command :prefix "tss-[^\-]" :docstring t)
 ;; `tss-popup-help'
 ;; Popup help about anything at point.
@@ -97,12 +97,12 @@
 ;; Stop TSS for current buffer.
 ;; `tss-setup-current-buffer'
 ;; Do setup for using TSS in current buffer.
-;; 
+;;
 ;;  *** END auto-documentation
 ;; [Note] Functions and variables other than listed above, Those specifications may be changed without notice.
 
 ;;; Tested On:
-;; 
+;;
 ;; - Emacs ... GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-08-15 on GNUPACK
 ;; - typescript-tools ... Version For Typescript v0.9
 ;; - auto-complete.el ... Version 1.4.0
@@ -127,7 +127,6 @@
 (require 'helm nil t)
 (require 'log4e)
 (require 'yaxception)
-
 
 (defgroup tss nil
   "Auto completion / Flymake for TypeScript."
@@ -760,7 +759,7 @@
 (defun tss--get-ac-summary (sum)
   (when (stringp sum)
     (let ((str (replace-regexp-in-string "\r?\n" " " sum)))
-      (truncate-string-to-width 
+      (truncate-string-to-width
        str tss-ac-summary-truncate-length 0 nil "..."))))
 
 (defun tss--get-ac-document (name kind type doc)
