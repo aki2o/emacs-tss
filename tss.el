@@ -1,6 +1,6 @@
 ;;; tss.el --- provide a interface for auto-complete.el/flymake.el on typescript-mode.
 
-;; Copyright (C) 2013  Hiroaki Otsu
+;; Copyright (C) 2013-2014  Hiroaki Otsu
 
 ;; Author: Hiroaki Otsu <ootsuhiroaki@gmail.com>
 ;; Keywords: typescript, completion
@@ -53,8 +53,10 @@
 ;; (setq tss-popup-help-key "C-:")
 ;; (setq tss-jump-to-definition-key "C->")
 ;;
-;; ;; Make config suit for you. About the config item, see Customization or eval the following sexp.
-;; ;; (customize-group "tss")
+;; Make config suit for you. About the config item, see Customization
+;; or eval the following sexp.
+;;
+;; (customize-group "tss")
 ;;
 ;; (tss-config-default)
 
@@ -99,7 +101,9 @@
 ;; Do setup for using TSS in current buffer.
 ;;
 ;;  *** END auto-documentation
-;; [Note] Functions and variables other than listed above, Those specifications may be changed without notice.
+;;
+;; [Note] Functions and variables other than listed above, Those
+;; specifications may be changed without notice.
 
 ;;; Tested On:
 ;;
@@ -113,6 +117,7 @@
 
 ;; Enjoy!!!
 
+;;; Code:
 
 (eval-when-compile (require 'cl))
 (require 'auto-complete)
@@ -201,10 +206,11 @@
     "return" "set" "static" "super" "switch" "this" "true" "undefined" "until"
     "var" "void" "while" "with"))
 
-(defvar tss--builtin-special-comments '(("reference" . ("path" "no-default-lib"))
-                                        ("summary"   . nil)
-                                        ("param"     . ("name" "type"))
-                                        ("value"     . ("type"))))
+(defvar tss--builtin-special-comments
+  '(("reference" . ("path" "no-default-lib"))
+    ("summary"   . nil)
+    ("param"     . ("name" "type"))
+    ("value"     . ("type"))))
 
 (defvar tss--last-send-string-failed-p nil)
 (make-variable-buffer-local 'tss--last-send-string-failed-p)
@@ -255,9 +261,11 @@
       (if (not tss--last-send-string-failed-p)
           (setq tss--last-send-string-failed-p t)
         (setq tss--current-active-p nil)
-        (tss--popup-tip (concat "Stopped TSS by errored on TypeScript Services Server.\n"
-                                "Maybe it be caused by the incomplete source code in buffer.\n"
-                                "At later, execute `tss-restart-current-buffer' for restart TSS."))
+        (tss--popup-tip
+         (concat
+          "Stopped TSS by errored on TypeScript Services Server.\n"
+          "Maybe it be caused by the incomplete source code in buffer.\n"
+          "At later, execute `tss-restart-current-buffer' for restart TSS."))
         (sleep-for 2))
       nil)))
 
@@ -284,7 +292,8 @@
   (save-excursion
     (loop with limitpt = (or limitpt (point-min))
           for pt = (loop with depth = 1
-                         for bspt = (or (save-excursion (tss--search-backward-in-code "(" limitpt))
+                         for bspt = (or (save-excursion
+                                          (tss--search-backward-in-code "(" limitpt))
                                         (point-min))
                          for bept = (or (save-excursion (tss--search-backward-in-code ")" limitpt))
                                         (point-min))
