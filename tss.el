@@ -642,6 +642,19 @@
                 (when (string= (format "%c" (char-before)) "/")
                   (auto-complete '(ac-source-tss-referenc-path)))))))
 
+(defvar ac-sources-tss
+  '(ac-source-tss-member
+    ac-source-tss-type
+    ac-source-tss-new
+    ac-source-tss-extends
+    ac-source-tss-implements
+    ac-source-tss-tag
+    ac-source-tss-anything
+    ac-source-tss-keyword
+    ac-source-tss-special-comment
+    ac-source-tss-special-comment-attr
+    ac-source-tss-referenc-path))
+
 (defvar tss--last-ac-start-point 1)
 (make-variable-buffer-local 'tss--last-ac-start-point)
 (defvar tss--last-ac-candidates nil)
@@ -1156,17 +1169,8 @@
                    (not (string= tss-jump-to-definition-key "")))
           (local-set-key (read-kbd-macro tss-jump-to-definition-key) 'tss-jump-to-definition))
         ;; For auto-complete
-        (setq ac-sources '(ac-source-tss-member
-                           ac-source-tss-type
-                           ac-source-tss-new
-                           ac-source-tss-extends
-                           ac-source-tss-implements
-                           ac-source-tss-tag
-                           ac-source-tss-anything
-                           ac-source-tss-keyword
-                           ac-source-tss-special-comment
-                           ac-source-tss-special-comment-attr
-                           ac-source-tss-referenc-path))
+        (loop for source in (reverse ac-sources-tss)
+              do (add-to-list 'ac-sources source))
         (auto-complete-mode t)
         ;; For eldoc
         (set (make-local-variable 'eldoc-documentation-function) 'tss--echo-method-usage)
