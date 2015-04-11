@@ -16,7 +16,7 @@
 
     [[file:image/demo1.png][demo1]]
 
-*** popuo.elによるヘルプ表示
+*** popup.elによるヘルプ表示
 
     [[file:image/demo2.png][demo2]]
 

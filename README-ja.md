@@ -13,7 +13,7 @@ typescript-toolsについては、以下を参照して下さい。
 
 ![demo1](image/demo1.png)
 
-### popuo.elによるヘルプ表示
+### popup.elによるヘルプ表示
 
 ![demo2](image/demo2.png)
 
