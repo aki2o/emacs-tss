@@ -407,7 +407,7 @@
   (tss--trace "Start tss process for %s" (buffer-name))
   (tss--delete-process t t)
   (let* ((fpath (expand-file-name (buffer-file-name)))
-         (procnm (format "typescript-service-%s" (buffer-name)))
+         (procnm "typescript-service-proc")
          (cmdstr (format "tss %s" (shell-quote-argument fpath)))
          (process-connection-type nil)
          (proc (when (file-exists-p fpath)
@@ -417,6 +417,9 @@
                  (start-process-shell-command procnm nil cmdstr)))
          (waiti 0))
     (when proc
+      ;; parsing output from a process can happen async, make sure
+      ;; path property is set before any other process actions.
+      (process-put proc 'source-path fpath)
       (set-process-filter proc 'tss--receive-server-response)
       (process-query-on-exit-flag proc)
       (setq tss--server-response nil)
@@ -461,14 +464,14 @@
   (tss--trace "Received server response.\n%s" res)
   (yaxception:$
     (yaxception:try
-      (let* ((buffnm (replace-regexp-in-string "^typescript-service-" "" (process-name proc)))
-             (buff (get-buffer buffnm)))
+      (let* ((fpath (process-get proc 'source-path))
+             (buff (and fpath
+                        (get-file-buffer fpath))))
         (if (not (buffer-live-p buff))
-            (progn (tss--warn "Source buffer is not alive : %s" buffnm)
+            (progn (tss--warn "Source buffer is not alive : %s" fpath)
                    (ignore-errors (delete-process proc)))
           (with-current-buffer buff
-            (loop with fpath = (expand-file-name (buffer-file-name))
-                  with endre = (rx-to-string `(and bol "\"" (or "loaded" "updated" "added")
+            (loop with endre = (rx-to-string `(and bol "\"" (or "loaded" "updated" "added")
                                                    (+ space) ,fpath))
                   for line in (split-string (or res "") "[\r\n]+")
                   if (string= line "null")
