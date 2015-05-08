@@ -407,7 +407,7 @@
   (tss--trace "Start tss process for %s" (buffer-name))
   (tss--delete-process t t)
   (let* ((fpath (expand-file-name (buffer-file-name)))
-         (procnm "typescript-service-proc")
+         (procnm (format "typescript-service-%s" (buffer-name)))
          (cmdstr (format "tss %s" (shell-quote-argument fpath)))
          (process-connection-type nil)
          (proc (when (file-exists-p fpath)
