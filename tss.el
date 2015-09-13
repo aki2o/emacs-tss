@@ -533,7 +533,20 @@
                (tss--trace "Got response from server.")
                tss--server-response))))))
 
-(defun* tss--sync-server (&key waitsec path buff)
+(defun* tss--sync-server (&key waitsec buff path
+                               source linecount)
+  "Sync current source with tss service. Default to 15 waiti,
+current buffer, current buffer's file path, current buffer's
+content, current buffer's line count.
+
+Use SOURCE and LINECOUNT to pass custom content and linecount.
+These are useful when you are doing completing/templating when
+the proposed changes are not even in buffer yet but you still
+want to get some info about these supposed changes (like
+definition/quickInfo and etc.). *NOTE*: I think these are needed
+because the ts service only support stateless queries, but
+nevertheless these might prove to be useful for other potential
+source manipulation."
   (when (tss--active-p)
     (save-restriction
       (widen)
@@ -541,8 +554,9 @@
             (waiti 0)
             (maxwaiti (* (or waitsec 3) 5))
             (cmdstr (format "update %d %s"
-                            (with-current-buffer (or buff (current-buffer))
-                              (count-lines (point-min) (point-max)))
+                            (or linecount
+                                (with-current-buffer (or buff (current-buffer))
+                                  (count-lines (point-min) (point-max))))
                             (expand-file-name (or path (buffer-file-name))))))
         (tss--debug "Start sync server : %s" cmdstr)
         (when (tss--send-string proc cmdstr)
@@ -550,8 +564,9 @@
           (setq tss--incomplete-server-response "")
           (setq tss--json-response-start-char "")
           (setq tss--json-response-end-char "")
-          (tss--send-string proc (with-current-buffer (or buff (current-buffer))
-                                   (buffer-substring (point-min) (point-max))))
+          (tss--send-string proc (or source
+                                     (with-current-buffer (or buff (current-buffer))
+                                       (buffer-string))))
           (tss--trace "Start wait sync server.")
           (while (and (< waiti maxwaiti)
                       (not tss--server-response))
